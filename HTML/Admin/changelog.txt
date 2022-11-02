@@ -1,0 +1,26 @@
+
+- Updated Node v16
+- Updated Bootstrap v5.2.0
+
+
+- UI Elements
+    - ui-carousel.html
+    - ui-offcanvas.html
+    - ui-typography.html
+    - ui-utilities.html  - Add New Pages
+    - ui-colors.html
+    - sidebar.html
+    - table-basic.html
+
+- New add
+    - dashboard-job.html 
+    - job-apply.html
+    - job-categories.html
+    - job-details.html
+    - job-grid.html
+    - job-list.html
+
+changes: 
+
+    - index.html
+    - dashboard.init.js
