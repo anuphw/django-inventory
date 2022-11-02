@@ -12,47 +12,47 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-dashboard" role="button">
                             <i class="bx bx-home-circle me-2"></i><span key="t-dashboards">Dashboards</span>
-                            <div class="arrow-down"></div>
+                            <!-- <div class="arrow-down"></div> -->
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="topnav-dashboard">
+                        <!-- <div class="dropdown-menu" aria-labelledby="topnav-dashboard">
 
                             <a href="{% url 'dashboard' %}" class="dropdown-item" key="t-default">Default</a>
                             <a href="#" class="dropdown-item" key="t-saas">Saas</a>
                             <a href="#" class="dropdown-item" key="t-crypto">Crypto</a>
                             <a href="#" class="dropdown-item" key="t-blog">Blog</a>
                             <a href="#" class="dropdown-item" key="t-blog">Jobs</a>
-                        </div>
+                        </div> -->
                     </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-uielement" role="button">
                             <i class="bx bx-tone me-2"></i>
-                            <span key="t-ui-elements"> UI Elements</span>
+                            <span key="t-ui-elements"> Products </span>
                             <div class="arrow-down"></div>
                         </a>
 
-                        <div class="dropdown-menu mega-dropdown-menu px-2 dropdown-mega-menu-xl"
+                        <div class="dropdown-menu"
                             aria-labelledby="topnav-uielement">
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div>
                                         <a href="#" class="dropdown-item"
-                                            key="t-alerts">Alerts</a>
+                                            key="t-create-product">Create Product</a>
                                         <a href="#" class="dropdown-item"
-                                            key="t-buttons">Buttons</a>
+                                            key="t-all-products">All Products</a>
                                         <a href="#" class="dropdown-item"
-                                            key="t-cards">Cards</a>
+                                            key="t-print-labels">Print Labels</a>
                                         <a href="#" class="dropdown-item"
-                                            key="t-carousel">Carousel</a>
+                                            key="t-category">Categories</a>
                                         <a href="#" class="dropdown-item"
-                                            key="t-dropdowns">Dropdowns</a>
+                                            key="t-brand">Brands</a>
                                         <a href="#" class="dropdown-item"
-                                            key="t-grid">Grid</a>
-                                        <a href="#" class="dropdown-item"
-                                            key="t-images">Images</a>
+                                            key="t-unit">Unit</a>
+                                        <!-- <a href="#" class="dropdown-item"
+                                            key="t-images">Images</a> -->
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <!-- <div class="col-lg-4">
                                     <div>
                                         <a href="#" class="dropdown-item"
                                             key="t-lightbox">Lightbox</a>
@@ -92,7 +92,7 @@
                                         <a href="#" class="dropdown-item" 
                                         key="t-utilities">Utilities</a>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                         </div>
@@ -100,208 +100,52 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                            <i class="bx bx-customize me-2"></i><span key="t-apps">Apps</span>
+                            <i class="bx bx-customize me-2"></i><span key="t-adjustment">Adjustment</span>
                             <div class="arrow-down"></div>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="topnav-pages">
-
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-email"
-                                    role="button">
-                                    <span key="t-calendar">Calendar</span> <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-email">
-                                    <a href="#" class="dropdown-item" key="t-tui-calendar">TUI Calendar</a>
-                                    <a href="#" class="dropdown-item" key="t-full-calender">Full Calendar</a>
-                                </div>
-                            </div>
-                            <a href="#" class="dropdown-item" key="t-chat">Chat</a>
-                            <a href="#" class="dropdown-item" key="t-file-manager">File
-                                Manager</a>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-email"
-                                    role="button">
-                                    <span key="t-email">Email</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-email">
-                                    <a href="#" class="dropdown-item" key="t-inbox">Inbox</a>
-                                    <a href="#" class="dropdown-item" key="t-read-email">Read
-                                        Email</a>
-
-                                    <div class="dropdown">
-                                        <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-blog"
-                                            role="button">
-                                            <span key="t-email-templates">Templates</span>
-                                            <div class="arrow-down"></div>
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="topnav-blog">
-                                            <a href="#" class="dropdown-item"
-                                                key="t-basic-action">Basic Action</a>
-                                            <a href="#" class="dropdown-item"
-                                                key="t-alert-email">Alert Email</a>
-                                            <a href="#" class="dropdown-item"
-                                                key="t-bill-email">Billing Email</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-invoice"
-                                    role="button">
-                                    <span key="t-invoices">Invoices</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-invoice">
-                                    <a href="#" class="dropdown-item"
-                                        key="t-invoice-list">Invoice
-                                        List</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-invoice-detail">Invoice
-                                        Detail</a>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-ecommerce"
-                                    role="button">
-                                    <span key="t-ecommerce">Ecommerce</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-ecommerce">
-                                    <a href="#" class="dropdown-item"
-                                        key="t-products">Products</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-product-detail">Product Detail</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-orders">Orders</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-customers">Customers</a>
-                                    <a href="#" class="dropdown-item" key="t-cart">Cart</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-checkout">Checkout</a>
-                                    <a href="#" class="dropdown-item" key="t-shops">Shops</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-add-product">Add
-                                        Product</a>
-                                </div>
-                            </div>
-
-
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-crypto"
-                                    role="button">
-                                    <span key="t-crypto">Crypto</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-crypto">
-                                    <a href="#" class="dropdown-item" key="t-wallet">Wallet</a>
-                                    <a href="#" class="dropdown-item" key="t-buy">Buy/Sell</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-exchange">Exchange</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-lending">Lending</a>
-                                    <a href="#" class="dropdown-item" key="t-orders">Orders</a>
-                                    <a href="#" class="dropdown-item" key="t-kyc">KYC
-                                        Application</a>
-                                    <a href="#" class="dropdown-item" key="t-ico">ICO
-                                        Landing</a>
-                                </div>
-                            </div>
-
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-project"
-                                    role="button">
-                                    <span key="t-projects">Projects</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-project">
-                                    <a href="#" class="dropdown-item"
-                                        key="t-p-grid">Projects Grid</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-p-list">Projects List</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-p-overview">Projects
-                                        Overview</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-create-new">Create
-                                        New</a>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-task"
-                                    role="button">
-                                    <span key="t-tasks">Tasks</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-task">
-                                    <a href="#" class="dropdown-item" key="t-task-list">Task
-                                        List</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-kanban-board">Kanban
-                                        Board</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-create-task">Create
-                                        Task</a>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-contact"
-                                    role="button">
-                                    <span key="t-contacts">Contacts</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-contact">
-                                    <a href="#" class="dropdown-item" key="t-user-grid">User
-                                        Grid</a>
-                                    <a href="#" class="dropdown-item" key="t-user-list">User
-                                        List</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-profile">Profile</a>
-                                </div>
-                            </div>
-
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-blog"
-                                    role="button">
-                                    <span key="t-blog">Blog</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-blog">
-                                    <a href="#" class="dropdown-item" key="t-blog-list">Blog
-                                        List</a>
-                                    <a href="#" class="dropdown-item" key="t-blog-grid">Blog
-                                        Grid</a>
-                                    <a href="#" class="dropdown-item"
-                                        key="t-blog-details">Blog
-                                        Details</a>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-jobs" role="button">
-                                    <span key="t-jobs">Jobs</span>
-                                    <div class="arrow-down"></div>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="topnav-jobs">
-                                    <a href="#" class="dropdown-item" key="t-job-list">Job List</a>
-                                    <a href="#" class="dropdown-item" key="t-job-grid">Job Grid</a>
-                                    <a href="#" class="dropdown-item" key="t-apply-job">Apply Job</a>
-                                    <a href="#" class="dropdown-item" key="t-job-details">Job Details</a>
-                                    <a href="#" class="dropdown-item" key="t-Jobs-categories">Jobs Categories</a>
-                                    <div class="dropdown">
-                                        <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-candidate" role="button">
-                                            <span key="t-candidate">Candidate</span>
-                                            <div class="arrow-down"></div>
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="topnav-candidate">
-                                            <a href="#" class="dropdown-item" key="t-list">List</a>
-                                            <a href="#" class="dropdown-item" key="t-overview">Overview</a>
-                                        </div>
-                                    </div>
-                            </div>
+                            <a href="#" class="dropdown-item" key="t-create-adjustment">Create Adjustment</a>
+                            <a href="#" class="dropdown-item" key="t-all-adjustments">All Adjustments</a>
                         </div>
                     </li>
 
                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                            <i class="bx bx-customize me-2"></i><span key="t-quotations">Quotations</span>
+                            <div class="arrow-down"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                            <a href="#" class="dropdown-item" key="t-create-quotation">Create Quotation</a>
+                            <a href="#" class="dropdown-item" key="t-all-quotations">All Quotations</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                            <i class="bx bx-customize me-2"></i><span key="t-purchases">Purchases</span>
+                            <div class="arrow-down"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                            <a href="#" class="dropdown-item" key="t-create-purchase">Create Purchase</a>
+                            <a href="#" class="dropdown-item" key="t-all-purchases">All Purchases</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
+                            <i class="bx bx-customize me-2"></i><span key="t-sales">Sales</span>
+                            <div class="arrow-down"></div>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="topnav-pages">
+                            <a href="#" class="dropdown-item" key="t-create-sale">Create Sale</a>
+                            <a href="#" class="dropdown-item" key="t-all-sales">All Sales</a>
+                            <a href="#" class="dropdown-item" key="t-sales-pos">POS</a>
+                            <a href="#" class="dropdown-item" key="t-shipments">Shipments</a>
+                        </div>
+                    </li>
+
+                    
+                    <!-- <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-components" role="button">
                             <i class="bx bx-collection me-2"></i><span key="t-components">Components</span>
                             <div class="arrow-down"></div>
@@ -560,7 +404,7 @@
                                 </div>
                             </div>
                         </div>
-                    </li>
+                    </li> -->
 
                 </ul>
             </div>
