@@ -1,0 +1,4 @@
+{% for contact in client_contacts %}
+        <option value="{{ contact.pk }}" selected>{{ contact.name }}</option>
+        <option value="{{ contact.pk }}">{{ contact.name }}</option>
+{% endfor %}

@@ -1,0 +1,85 @@
+{% extends 'partials/base.html' %}
+{% block title %}Deals{% endblock %}
+{% load static %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <h2>Deals</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <a href="{% url 'deals:add_deal' %}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                    Add new deal
+                                </a>
+                            </div>
+                        </div><!-- end col-->
+                    </div>
+
+                    <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
+                        <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Title</th>
+                            <th>Contact Person</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for deal in deal_list %}
+                        <tr>
+                            <td><a href="{{ deal.client.get_absolute_url }}">{{ client.name }}</a></td>
+                            <td>{{ deal.title }}</td>
+                            <td>{{ deal.contact_person.name }}</td>
+                            <td>{{ deal.status.status }}</td>
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+
+                </div>
+            </div>
+        </div> <!-- end col -->
+    </div>
+
+{% endblock %}
+
+
+{% block extra_javascript %}
+        <!-- Required datatable js -->
+        <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+        <!-- Buttons examples -->
+        <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+        <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+        
+        <!-- Responsive examples -->
+        <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'js/pages/datatables.init.js' %}"></script>    
+{% endblock %}

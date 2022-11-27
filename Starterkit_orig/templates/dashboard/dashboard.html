@@ -1,0 +1,27 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'libs/toastr/build/toastr.min.css' %}">
+{% endblock extra_css %}
+    
+{% block extra_content %}
+                    <!-- subscribeModal -->
+
+{% endblock extra_content %} 
+{% block contents %}
+{% endblock %}
+
+
+{% block extra_javascript %}
+    <!-- apexcharts -->
+    <script src="{% static 'libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+    <!-- toastr plugin -->
+    <script src="{% static 'libs/toastr/build/toastr.min.js' %}"></script>
+
+    <!-- dashboard init -->
+    <script src="{% static 'js/pages/dashboard.init.js' %}"></script>
+
+{% endblock %}

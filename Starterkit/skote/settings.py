@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ['127.0.0.1','localhost','2da188c804ec.ngrok.io']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,6 +53,8 @@ INSTALLED_APPS = [
     # Local App
     'layout',
     'pages',
+    'clients',
+    'projects',
     # Third Party App
     'crispy_forms',
     'django.contrib.sites',
@@ -73,9 +76,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    # 'skote.get_username.RequestMiddleware',
 ]
 
+MIDDLEWARE_CLASSES = (
+    'skote.get_username.RequestMiddleware',
+)
+
 ROOT_URLCONF = 'skote.urls'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 TEMPLATES = [
     {
@@ -102,7 +113,7 @@ WSGI_APPLICATION = 'skote.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'skote_startup',
+        'NAME': 'skote',
         'USER' : 'test',
         'PASSWORD' : 'test',
         'HOST' : 'localhost',
@@ -150,6 +161,9 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
 STATIC_ROOT = os.path.join(BASE_DIR,'assets')
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/files/'
 
 AUTHENTICATION_BACKENDS = [
     

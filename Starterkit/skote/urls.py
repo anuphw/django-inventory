@@ -19,6 +19,10 @@ from skote import views
 from .views import MyPasswordSetView ,MyPasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -27,7 +31,11 @@ urlpatterns = [
    
     # Layouts
     path('layout/',include('layout.urls')),
-   
+
+    # Inventory
+    path('inventory/',include('inventory.urls')),
+    path('clients/',include('clients.urls', namespace='clients')),
+    path('projects/',include('projects.urls', namespace='projects')),
     #Authencation
     # path('authentication/',include('authentication.urls')),
     #Pages
@@ -41,4 +49,5 @@ urlpatterns = [
     #Custum set password done page redirect
     path('accounts/password/set/', login_required(MyPasswordSetView.as_view()), name="account_set_password"),
 ]
-
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,148 @@
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic.edit import FormView
+from .models import *
+from .forms import ProjectForm, FileUploadForm
+from django.urls import reverse
+from django.views.decorators.clickjacking import xframe_options_exempt
+
+class ProjectListView(ListView):
+    model = Project
+    template_name = 'projects/projects_list.html'
+
+class ProjectDetailView(DetailView):
+    model = Project
+    template_name = 'projects/project_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['fileForm'] = FileUploadForm()
+        return context
+
+class ProjectUpdateView(UpdateView):
+    model = Project
+    template_name = 'projects/project_update.html'
+    fields = ['title','contact_person','description','status','delivary_address']
+
+    def get_success_url(self):
+        # return self.success_url
+        return self.get_object().get_absolute_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['client'] = self.get_object().client
+        context['update']= True
+        context['current_contact'] = self.get_object().contact_person
+        # context['contact_person'] = ClientContact.objects.filter(client_id = context['client'])
+        return context
+    
+    def form_valid(self, form):
+        user = self.request.user
+        print(user)
+        for f in form:
+            print(f.name,f.data)
+        object = self.get_object()
+        notes = ""
+        # Create notes based on what is changed
+        for f in form:
+            if f.name in form.changed_data:
+                if f.name == 'contact_person':
+                    new_contact = ClientContact.objects.get_first(f.data)
+                    notes += f" {f.name} = {new_contact.name}."
+                elif f.name == 'status':
+                    new_status = Status.objects.get_first(f.data)
+                    notes += f" {f.name} = {new_status.status}."
+                else:
+                    notes += f" {f.name} = {f.data}."
+        print(notes)
+        # if there are updated then log the timeline
+        if len(notes) > 0:
+            notes = f"Updates: " + notes
+            ProjectTimeline(project=object,status=self.get_object().status,notes = notes,user = user).save()
+        return super().form_valid(form)
+
+class ProjectCreateView(CreateView):
+    model = Project
+    # form_class = ProjectForm
+    template_name = 'projects/project_create.html'
+    fields = '__all__'
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def form_valid(self, form):
+        user = self.request.user
+        for f in form:
+            print(f.name,f.data)
+        self.object = form.save()
+        status = ""
+        notes = "Initiated project with: "
+        # Create notes based on what is changed
+        for f in form:
+            if f.name == 'contact_person':
+                for c in set(f.data):
+                    new_contact = ClientContact.objects.get_first(c)
+                    notes += f" {f.name} =  {new_contact.name}."
+            elif f.name == 'status':
+                new_status = Status.objects.get_first(f.data)
+                notes += f" {f.name} = {new_status.status}."
+                status = new_status
+            else:
+                notes += f" {f.name} = {f.data}."
+        print(notes)
+        self.update = ProjectTimeline(project=self.object,status=status,notes = notes,user = user).save()
+        return super().form_valid(form)
+
+class ProjectDeleteView(DeleteView):
+    model = Project
+
+    def get_success_url(self):  
+        return reverse('projects:projects')
+
+    
+    def get(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return reverse('projects:projects')
+
+
+class ProjectFileDeleteView(DeleteView):
+    model = ProjectFiles
+    project = None
+
+    def get_success_url(self):
+        return self.project.get_absolute_url()
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        object = self.get_object()
+        self.project = object.project
+        notes = "Deleted file " + object.get_file_name()
+        ProjectTimeline(project=self.project,status=self.project.status,notes = notes,user = user).save()
+        return self.delete(request, *args, **kwargs)
+
+
+@xframe_options_exempt
+def handle_upload_file(request):
+    f = request.FILES['file']
+    user = request.user
+    project_id = request.POST['project_id'][0]
+    notes = request.POST['notes']
+    project = Project.objects.get_first(project_id)
+    pf = ProjectFiles(project=project
+                    ,file=f
+                    ,notes=notes)
+    pf.save()
+    ProjectTimeline(project=project
+                    ,status=project.status
+                    ,notes = f'Uploaded: {pf.get_file_name()} ## {notes}'
+                    ,project_file = pf
+                    ,user = user).save()
+    return HttpResponseRedirect(project.get_absolute_url())
+
+def kanbanboard(request):
+    statuses = Status.objects.all()
+    return render(request,'projects/kanbanboard.html',{'statuses':statuses})
+    

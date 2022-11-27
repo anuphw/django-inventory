@@ -1,0 +1,84 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block contents %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Create Adjustment</h4>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adj-warehouse" class="form-label">Warehouse</label>
+                                    <select class="form-select" id="adj-warehouse" aria-label="Floating label select example">
+                                        <option value="1" disabled selected>Choose Warehouse</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="adj-date" class="form-label">Date</label>
+                                    <input class="form-control" type="date" value="2022-11-10"
+                                                    id="adj-date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <label for="adj-product" class="col-sm-3 col-form-label">Product</label>
+                            <div class="col-mb-9">
+                                <input type="text" class="form-control" id="adj-product" placeholder="Search for product by Code or Name">
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <div class="table-responsive">
+                                    <table class="table mb-0" id="adj-table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Product Code</th>
+                                                <th>Product Name</th>
+                                                <th>Stock</th>
+                                                <th>Qty</th>
+                                                <th>Type</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td colspan="6">No data available</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="row">
+                            <div class="mb-3">
+                                <label for="adj-note" class="form-label">Note :</label>
+                                <textarea id="adj-note" class="form-control" rows="3" placeholder="A few words"></textarea>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-9">
+                                <div>
+                                    <button type="submit" class="btn btn-primary w-md">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    
+{% endblock %}
