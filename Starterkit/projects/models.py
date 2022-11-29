@@ -60,6 +60,13 @@ class Project(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    @property
+    def company_contacts(self):
+        return ClientContact.objects.filter(client=self.client)
+    @property
+    def selected_contacts(self):
+        return self.contact_person
+
     def get_delete_url(self):
         return reverse('projects:project_delete', kwargs={'pk':self.pk})
 

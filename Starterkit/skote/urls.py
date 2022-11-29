@@ -36,6 +36,7 @@ urlpatterns = [
     path('inventory/',include('inventory.urls')),
     path('clients/',include('clients.urls', namespace='clients')),
     path('projects/',include('projects.urls', namespace='projects')),
+    path('materials/',include('materials.urls', namespace='materials')),
     #Authencation
     # path('authentication/',include('authentication.urls')),
     #Pages

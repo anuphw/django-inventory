@@ -18,28 +18,7 @@
                         {% endfor %}
                         {% csrf_token %}
                         {{ form.non_form_errors }}
-                        {% block client %}
-                            {% if client %} 
-                            <div id="client_id" client-id="{{ client.id }}" hidden></div>
-                            <div id="client_contact_id" client-contact-id="{{ current_contact.id }}" hidden></div>
-                            <div class="mb-3 row">
-                                <label for="example-text-input" class="col-md-2 col-form-label">Client</label>
-                                <div class="col-md-10">
-                                    {{ client.name }}
-                                </div>
-                            </div>
-                            <div class="mb-3 row">
-                                <label for="example-text-input" class="col-md-2 col-form-label">Contact</label>
-                                <div class="col-md-10">
-                                    <select name="contact_person" required="" id="id_contact_person">
-                                        <option value="" selected="">---------</option>
-                                      
-                                      </select>
-                                </div>
-                            </div>
-                            
-                            {% endif %}
-                        {% endblock %}
+                        
                         {% for field in form %}
                             {{ field.errors }}
                             <div class="mb-3 row">
@@ -71,20 +50,9 @@
 {% block extra_javascript %}
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script>
-    {% if update %}
     $(document).ready(function(){
-        var client_id = $("#client_id").attr("client-id");
-        var current_contact = $("#client_contact_id").attr("client-contact-id")
-        console.log(client_id);
-        console.log(window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contact='+current_contact);
-        $.ajax({
-            url : window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contact='+current_contact,
-            success: function (data) { 
-                $("#id_contact_person").html(data);
-            }
-        });
-    });
-    {% else %}
+        $("#id_contact_person").html('<option value="" disabled>--------</option>');
+    })
     $("#id_client").change(function () {
       var client_id = $('#id_client').find(":selected").val();  // get the selected country ID from the HTML input
       var url = window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id;  // get the url of the `load_cities` view
@@ -96,6 +64,5 @@
       });
 
     });
-    {% endif %}
   </script>
 {% endblock %}

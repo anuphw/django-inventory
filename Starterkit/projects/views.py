@@ -22,31 +22,38 @@ class ProjectDetailView(DetailView):
 class ProjectUpdateView(UpdateView):
     model = Project
     template_name = 'projects/project_update.html'
-    fields = ['title','contact_person','description','status','delivary_address']
+    fields = ['title','description','status','delivary_address']
 
+    
     def get_success_url(self):
         # return self.success_url
         return self.get_object().get_absolute_url()
 
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['all_contacts'] = self.object.company_contacts
+        context['current_contacts'] = self.object.selected_contacts
         context['client'] = self.get_object().client
         context['update']= True
-        context['current_contact'] = self.get_object().contact_person
+        contacts = [ i.id for i in self.get_object().contact_person.all() ]
+        
+        context['current_contacts'] = contacts
         # context['contact_person'] = ClientContact.objects.filter(client_id = context['client'])
         return context
     
     def form_valid(self, form):
         user = self.request.user
-        print(user)
         for f in form:
             print(f.name,f.data)
         object = self.get_object()
         notes = ""
         # Create notes based on what is changed
         for f in form:
+            print('Form Data ***** ',f.name, '*'*4,f.data)
             if f.name in form.changed_data:
                 if f.name == 'contact_person':
+                    print(f.data)
                     new_contact = ClientContact.objects.get_first(f.data)
                     notes += f" {f.name} = {new_contact.name}."
                 elif f.name == 'status':
@@ -54,7 +61,6 @@ class ProjectUpdateView(UpdateView):
                     notes += f" {f.name} = {new_status.status}."
                 else:
                     notes += f" {f.name} = {f.data}."
-        print(notes)
         # if there are updated then log the timeline
         if len(notes) > 0:
             notes = f"Updates: " + notes

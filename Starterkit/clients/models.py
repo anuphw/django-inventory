@@ -4,7 +4,10 @@ from django.urls import reverse
 
 class FirstManager(models.Manager):
     def get_first(self,pk):
-        return super().get_queryset().filter(pk=pk).first()
+        try:
+            return super().get_queryset().filter(pk=pk).first()
+        except:
+            return None
 
     
 

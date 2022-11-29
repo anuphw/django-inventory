@@ -60,6 +60,7 @@ class ClientContactUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         context['update']= True
         return context
 
@@ -87,11 +88,12 @@ class ClientContactDeleteView(DeleteView):
     
 def load_client_contact(request):
     client_id = int(request.GET.get('client'))
-    if 'current_contact' in request.GET:
-        current_contact = int(request.GET.get('current_contact'))
+    print(request.GET.getlist('current_contacts'))
+    if 'current_contacts' in request.GET:
+        current_contacts = [ int(i) for i in request.GET.getlist('current_contacts')]
     else:
-        current_contact = None
+        current_contacts = []
     client_contacts = ClientContact.objects.filter(client_id=client_id).order_by('name')
     return render(request, 'clients/contact_dropdown_list_options.html', {
         'client_contacts': client_contacts,
-        'current_contact': current_contact})
+        'current_contacts': current_contacts})

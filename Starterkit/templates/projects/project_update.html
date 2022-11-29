@@ -6,11 +6,8 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    {% if update %}
+                    
                     <h4 class="card-title mb-4">Update Project</h4>
-                    {% else %} 
-                    <h4 class="card-title mb-4">New Project</h4>
-                    {% endif %}
                     <form id="project_form" method="post">
                         {% for hidden_field in form.hidden_fields %}
                             {{ hidden_field.errors }}
@@ -19,9 +16,9 @@
                         {% csrf_token %}
                         {{ form.non_form_errors }}
                         {% block client %}
-                            {% if client %} 
+                            <!-- {% if client %} 
                             <div id="client_id" client-id="{{ client.id }}" hidden></div>
-                            <div id="client_contact_id" client-contact-id="{{ current_contact.id }}" hidden></div>
+                            <div id="client_contact_ids" client-contact-id="{{ current_contact.ids }}" hidden></div>
                             <div class="mb-3 row">
                                 <label for="example-text-input" class="col-md-2 col-form-label">Client</label>
                                 <div class="col-md-10">
@@ -31,14 +28,19 @@
                             <div class="mb-3 row">
                                 <label for="example-text-input" class="col-md-2 col-form-label">Contact</label>
                                 <div class="col-md-10">
-                                    <select name="contact_person" required="" id="id_contact_person">
-                                        <option value="" selected="">---------</option>
-                                      
+                                    <select name="contact_person" required="" id="id_contact_person" multiple>
+                                        {% for c in all_contacts %} 
+                                        {% if c in current_contacts %} 
+                                        <option value="{{ c.id }}" selected>{{ c.name }}</option>
+                                        {% else %}
+                                        <option value="{{ c.id }}">{{ c.name }}</option>
+                                        {% endif %} 
+                                        {% endfor %} 
                                       </select>
                                 </div>
                             </div>
                             
-                            {% endif %}
+                            {% endif %} -->
                         {% endblock %}
                         {% for field in form %}
                             {{ field.errors }}
@@ -68,34 +70,20 @@
     
 {% endblock %}
 
-{% block extra_javascript %}
+<!-- {% block extra_javascript %}
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script>
-    {% if update %}
     $(document).ready(function(){
         var client_id = $("#client_id").attr("client-id");
-        var current_contact = $("#client_contact_id").attr("client-contact-id")
+        var current_contacts = $("#client_contact_ids").attr("client-contact-ids")
         console.log(client_id);
-        console.log(window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contact='+current_contact);
+        console.log(window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contacts='+current_contacts);
         $.ajax({
-            url : window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contact='+current_contact,
+            url : window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id+'&current_contacts='+current_contacts,
             success: function (data) { 
                 $("#id_contact_person").html(data);
             }
         });
     });
-    {% else %}
-    $("#id_client").change(function () {
-      var client_id = $('#id_client').find(":selected").val();  // get the selected country ID from the HTML input
-      var url = window.location.origin+"{% url 'clients:ajax_load_client_contacts' %}"+'?client='+client_id;  // get the url of the `load_cities` view
-      $.ajax({                       // initialize an AJAX request
-        url: url,
-        success: function (data) { 
-          $("#id_contact_person").html(data);  // replace the contents of the city input with the data that came from the server
-        }
-      });
-
-    });
-    {% endif %}
   </script>
-{% endblock %}
+{% endblock %} -->

@@ -1,0 +1,101 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Inventory{% endblock %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
+{% endblock %}
+{% block contents %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table id="datatable" class="table table-bordered dt-responsive  wrap w-90">
+                        <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Warehouse</th>
+                            <th>Change</th>
+                            <th>User</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for ia in inventoryadjustment_list %}
+                        <tr>
+                            <td>
+                                {{ia.inventory.material}}
+                            </td>
+                            <td>
+                                {{ia.inventory.warehouse}}
+                            </td>
+                            <td>
+                                {{ia.adjustment_amount}}
+                            </td>
+                            <td>
+                                {{ia.user}}
+                            </td>
+                            <td>
+                                {{ia.created_at}}
+                            </td>
+                            
+                            <!-- <td>
+                                edit
+                                <a href="{{ inventory.update_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                    <i class="mdi mdi-account-edit"></i>
+                                </a>
+                                <a href="{{ inventory.delete_url }}" role="button" class="btn btn-outline-danger waves-effect waves-light">
+                                    <i class="mdi mdi-delete"></i>
+                                </a>
+                            </td> -->
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+
+                </div>
+            </div>
+        </div> <!-- end col -->
+    </div> 
+    
+{% endblock %}
+
+{% block extra_javascript %}
+    <!-- Required datatable js -->
+    <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <!-- Buttons examples -->
+    <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+    
+    <!-- Responsive examples -->
+    <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'js/pages/datatables.init.js' %}"></script>  
+    <script type="text/javascript">
+        function showAddPopup(triggeringLink) {
+            href = triggeringLink.href;
+            var win = window.open(href, 'Category', 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+            win.close();
+        }
+    </script>
+{% endblock %}
