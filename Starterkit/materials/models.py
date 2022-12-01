@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from projects.models import file_size
 from django.contrib.auth.models import User
 from projects.models import *
@@ -61,6 +62,17 @@ class Material(models.Model):
     def __str__(self):
         return self.name
     
+    
+    def get_level(self,warehouse_id):
+        warehouse = Warehouse.objects.get(pk=warehouse_id)
+        inventory = Inventory.objects.filter(material=self,warehouse=warehouse).first()
+        return inventory.quantity
+    
+    
+    def get_low_level(self,warehouse_id):
+        warehouse = Warehouse.objects.get(pk=warehouse_id)
+        inventory = Inventory.objects.filter(material=self,warehouse=warehouse).first()
+        return inventory.low_level
     @property
     def update_url(self):
         return reverse('materials:material_update',kwargs={'pk': self.id})
@@ -148,36 +160,47 @@ class InventoryAdjustment(models.Model):
 
     
 
-# # models related to purchases
+# models related to purchases
 
 
-# class PurchaseStatus(models.Model):
-#     name = models.CharField(max_length=10)
-#     def __str__(self):
-#             return self.name
 
-# class MaterialQty(models.Model):
-#     material = models.ForeignKey(Material,on_delete=models.CASCADE)
-#     quantity = models.DecimalField(max_digits=10,decimal_places=2)
+class Purchase(models.Model):
+    date = models.DateField()
+    description = models.CharField(max_length=50)
+    supplier = models.ForeignKey(Client,on_delete=models.DO_NOTHING)
+    warehouse = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING,null=True, blank=True)
+    project = models.ForeignKey(Project,on_delete=models.DO_NOTHING,null=True, blank=True)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+
+    
+
+class MaterialQty(models.Model):
+    material = models.ForeignKey(Material,on_delete=models.CASCADE)
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    purchase = models.ForeignKey(Purchase,on_delete=models.CASCADE)
 
 
-# class Purchase(models.Model):
-#     date = models.DateField()
-#     description = models.TextField()
-#     supplier = models.ForeignKey(Client,on_delete=models.DO_NOTHING)
-#     warehouse = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING)
-#     materials = models.ManyToManyField(MaterialQty)
-#     project = models.ForeignKey(Project,on_delete=models.DO_NOTHING,null=True)
-#     status = models.ForeignKey(PurchaseStatus,on_delete=models.DO_NOTHING)
-#     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
 
-# # Models on transfers
-# class MaterialTransfer(models.Model):
-#     inventory = models.ForeignKey(Inventory,on_delete=models.DO_NOTHING)
-#     quantity = models.ManyToManyField(MaterialQty)
-#     project = models.ForeignKey(Project,on_delete=models.SET_NULL)
-#     date = models.DateField()
-#     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+
+# Models on transfers
+class MaterialTransfer(models.Model):
+    date = models.DateField()
+    source = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING,related_name='source')
+    destination = models.ForeignKey(Warehouse,on_delete=models.SET_NULL,null=True, blank=True,related_name='destination')
+    project =  models.ForeignKey(Project,on_delete=models.SET_NULL,null=True, blank=True)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+
+    
+
+    def clean(self):
+        super().clean()
+        if self.destination is None and self.project is None:
+            raise ValidationError('Both destination and project cannot be empty')
+
+class MaterialQtyTransfer(models.Model):
+    material = models.ForeignKey(Material,on_delete=models.CASCADE)
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    transfer = models.ForeignKey(MaterialTransfer,on_delete=models.CASCADE)
 
 
 

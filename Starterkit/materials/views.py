@@ -4,7 +4,8 @@ from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from .models import *
 # from .forms import ProjectForm, FileUploadForm
-from .forms import *
+from .forms import (MaterialQtyForm, PurchaseForm, MaterialFormSet, 
+MaterialQtyTransferForm, TransferForm, TransferFormSet)
 from django.urls import reverse_lazy
 
 
@@ -412,3 +413,84 @@ class InventoryAdjListView(ListView):
     model = InventoryAdjustment
     template_name = 'materials/inventory_adj_list.html'
     fields = '__all__'
+
+# Purchases
+
+class PurchasesListView(ListView):
+    model = Purchase
+    template_name = '/materials/purchase_list.html'
+    fields = '__all__'
+
+
+class PurchaseDetailView(DetailView):
+    model = Purchase
+    template_name = '/materials/purchase_detail.html'
+    fields = '__all__'
+
+class PurchaseCreateView(CreateView):
+    model = Purchase
+    forms = PurchaseForm
+    template_name = 'materials/purchase_create.html'
+    fields = ['date','description','supplier','warehouse','project']
+
+    def get_success_url(self):
+        return reverse('materials:purchase_detail',kwargs={pk:self.id})
+
+    def get_context_data(self, **kwargs):
+        context = super(PurchaseCreateView, self).get_context_data(**kwargs)
+        formset = MaterialFormSet(queryset=Material.objects.none())
+        context['formset'] = formset
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        materials = MaterialFormSet(request.POST)
+        purchase = PurchaseForm(request.POST)
+        if materials.is_valid() and purchase.is_valid():
+            return self.form_valid(materials,purchase)
+    
+    def form_valid(self, materials,purchase):
+        user = self.request.user
+        parent = purchase.save(commit = False)
+        parent.user = user
+        parent.save()
+        for material in materials:
+            child = material.save(commit=False)
+            child.purchase = parent
+            print('*'*20)
+            print(child)
+            child.save()
+        return HttpResponseRedirect(reverse('materials:purchase_list'))
+
+class MaterialTransferCreateView(CreateView):
+    model = MaterialTransfer
+    forms = TransferForm
+    template_name = 'materials/transfer_create.html'
+    fields = ['date','source','destination','project']
+
+    def get_success_url(self):
+        return reverse('materials:transfer_list')
+
+    def get_context_data(self, **kwargs):
+        context = super(MaterialTransferCreateView, self).get_context_data(**kwargs)
+        formset = TransferFormSet(queryset=Material.objects.none())
+        context['formset'] = formset
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        materials = TransferFormSet(request.POST)
+        transfer = TransferForm(request.POST)
+        if materials.is_valid() and transfer.is_valid():
+            return self.form_valid(materials,transfer)
+    
+    def form_valid(self, materials,transfer):
+        user = self.request.user
+        parent = transfer.save(commit = False)
+        parent.user = user
+        parent.save()
+        for material in materials:
+            child = material.save(commit=False)
+            child.purchase = parent
+            print('*'*20)
+            print(child)
+            child.save()
+        return HttpResponseRedirect(reverse('materials:transfer_list'))

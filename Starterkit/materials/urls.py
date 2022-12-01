@@ -35,4 +35,6 @@ urlpatterns = [
     path('inventory/<int:pk>/delete/',InventoryDeleteView.as_view(),name='inventory_delete'),
     path('inventory/',InventoryListView.as_view(),name='inventory_list'),
     path('inventory_adj/',InventoryAdjListView.as_view(),name='inventory_adj_list'),
+    path('purchases/',PurchasesListView.as_view(),name='purchase_list'),
+    path('purchases/add/',PurchaseCreateView.as_view(),name='purchase_create'),
 ]
