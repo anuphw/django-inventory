@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from .models import Client, ClientContact
 from django.urls import reverse
@@ -20,6 +20,20 @@ class ClientCreateView(CreateView):
     model = Client
     template_name = 'clients/client_create.html'
     fields = '__all__'
+
+
+class ClientAddPopup(CreateView):
+    model = Client
+    template_name = 'clients/client_create.html'
+    fields = '__all__'
+
+    def form_valid(self, form):
+        instance = form.save()
+        try:
+            target_id = self.kwargs['target_id']
+        except:
+            target_id = 'id_client'
+        return HttpResponse('<script>window.opener.closePopup(window, "%s", "%s", "#%s");</script>' % (instance.pk, instance, target_id))
 
 
 class ClientUpdateView(UpdateView):

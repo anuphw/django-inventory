@@ -12,4 +12,6 @@ urlpatterns = [
     path('<int:pk>/update_contact',ClientContactUpdateView.as_view(),name='client_contact_update'),
     path('<int:pk>/delete',ClientContactDeleteView.as_view(),name='client_contact_delete'),
     path('load-client_contacts/', load_client_contact, name='ajax_load_client_contacts'),
+    path('pop/<str:target_id>',ClientAddPopup.as_view(),name='client_pop'),
+
 ]

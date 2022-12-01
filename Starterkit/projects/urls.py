@@ -8,6 +8,7 @@ app_name = 'projects'
 urlpatterns = [
     path('',login_required(ProjectListView.as_view()), name='projects'),
     path('add/',login_required(ProjectCreateView.as_view()),name='add_project'),
+    path('pop/',ProjectPopView.as_view(),name='project_pop'),
     path('<int:pk>/',login_required(ProjectDetailView.as_view()),name='project_detail'),
     path('<int:pk>/update',login_required(ProjectUpdateView.as_view()),name='project_update'),
     path('<int:pk>/delete',login_required(ProjectDeleteView.as_view()),name='project_delete'),

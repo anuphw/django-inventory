@@ -177,7 +177,11 @@ class MaterialAddPopup(CreateView):
 
     def form_valid(self, form):
         instance = form.save()
-        return HttpResponse('<script>window.opener.closePopup(window, "%s", "%s", "#id_material");</script>' % (instance.pk, instance))
+        try:
+            target_id = self.kwargs['target_id']
+        except:
+            target_id = 'id_material'
+        return HttpResponse('<script>window.opener.closePopup(window, "%s", "%s", "#%s");</script>' % (instance.pk, instance, target_id))
 
 
 class MaterialCreateView(CreateView):
@@ -440,6 +444,7 @@ class PurchaseCreateView(CreateView):
         context = super(PurchaseCreateView, self).get_context_data(**kwargs)
         formset = MaterialFormSet(queryset=Material.objects.none())
         context['formset'] = formset
+        context['form_name'] = 'Add Purchase'
         return context
     
     def post(self, request, *args, **kwargs):

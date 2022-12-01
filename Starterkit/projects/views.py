@@ -19,6 +19,7 @@ class ProjectDetailView(DetailView):
         context['fileForm'] = FileUploadForm()
         return context
 
+
 class ProjectUpdateView(UpdateView):
     model = Project
     template_name = 'projects/project_update.html'
@@ -66,6 +67,12 @@ class ProjectUpdateView(UpdateView):
             notes = f"Updates: " + notes
             ProjectTimeline(project=object,status=self.get_object().status,notes = notes,user = user).save()
         return super().form_valid(form)
+
+class ProjectPopView(CreateView):
+    model = Project
+    template_name = 'projects/project_create.html'
+    fields = '__all__'
+
 
 class ProjectCreateView(CreateView):
     model = Project

@@ -13571,35 +13571,4 @@ a {
   0% {
     width: 0;
   }
-}m-progess {
-  position: relative;
-}
-.custom-progess .progress-icon {
-  position: absolute;
-  top: -12px;
-}
-.custom-progess .progress-icon .avatar-title {
-  background: var(--bs-card-bg);
-}
-
-.animated-progess {
-  position: relative;
-}
-.animated-progess .progress-bar {
-  position: relative;
-  border-radius: 6px;
-  -webkit-animation: animate-positive 2s;
-          animation: animate-positive 2s;
-}
-
-@-webkit-keyframes animate-positive {
-  0% {
-    width: 0;
-  }
-}
-
-@keyframes animate-positive {
-  0% {
-    width: 0;
-  }
 }

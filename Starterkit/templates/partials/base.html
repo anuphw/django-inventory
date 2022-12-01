@@ -16,12 +16,7 @@
     {% block css %}
     {% block extra_css %}
     {% endblock %}
-    <!-- Bootstrap Css -->
-    <link href="{% static 'css/bootstrap.min.css' %}" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="{% static 'css/icons.min.css' %}" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="{% static 'css/app.min.css' %}" id="app-style" rel="stylesheet" type="text/css" />
+    {% include 'partials/css.html' %}
     {% endblock css %}
 </head>
 

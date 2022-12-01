@@ -1,14 +1,6 @@
 {% extends 'partials/base.html' %}
 {% load static %}
 {% block title %}{{ form_name }}{% endblock %}
-{% block extra_css %}
-    <!-- DataTables -->
-    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
-
-    <!-- Responsive datatable examples -->
-    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
-{% endblock %}
 {% block contents %}
     <div class="row">
         <div class="col-lg-12">
@@ -52,6 +44,18 @@
                                     {% endif %}
                                     {% if field.name == 'warehouse' %}
                                     <a href="{% url 'materials:warehouse_pop' %}" id="add_category" onclick="return showAddPopup(this);">
+                                        <i class="bx bx-plus-medical"></i>
+                                    </a>
+                                    
+                                    {% elif field.name == 'supplier' %}
+                                    {{ field.id }}
+                                    <a href='{% url "clients:client_pop" target_id="id_supplier" %}' id="add_client" onclick="return showAddPopup(this);">
+                                        <i class="bx bx-plus-medical"></i>
+                                    </a>
+                                    
+                                    {% elif field.name == 'project' %}
+                                    {{ field.id }}
+                                    <a href='{% url "projects:project_pop" %}' id="add_project" onclick="return showAddPopup(this);">
                                         <i class="bx bx-plus-medical"></i>
                                     </a>
                                     {% endif %}
@@ -118,11 +122,11 @@
                                                 <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
                                                 {{ field }}
 
-                                    {% if field.name == 'material' %}
-                                    <a href="{% url 'materials:material_pop' %}" id="add_category" onclick="return showAddPopup(this);" target="_blank">
-                                        <i class="bx bx-plus-medical"></i>
-                                    </a>
-                                    {% endif %}
+                                                {% if field.name == 'material' %}
+                                                <a href="{% url 'materials:material_pop' %}id_form-__prefix__-material" id="add_category" onclick="return showAddPopup(this);" target="_blank">
+                                                    <i class="bx bx-plus-medical"></i>
+                                                </a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         {% endif %}
@@ -200,10 +204,13 @@
             copyEmptyFormEl.setAttribute('class', 'material-form')
             copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
             const regex = new RegExp('__prefix__', 'g')
+            link = copyEmptyFormEl.querySelector("#add_category")
+            link.href = link.href.replace(regex,currentFormCount)
             copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
             totalNewForms.setAttribute('value', currentFormCount + 1)
             // now add new empty form element to our html form
             formCopyTarget.append(copyEmptyFormEl)
         }
+        
     </script>
 {% endblock %}
