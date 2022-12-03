@@ -27,7 +27,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-uielement" role="button">
                             <i class="bx bx-tone me-2"></i>
-                            <span key="t-ui-elements"> Products </span>
+                            <span key="t-ui-elements">Raw Materials </span>
                             <div class="arrow-down"></div>
                         </a>
 
@@ -36,17 +36,15 @@
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div>
-                                        <a href="#" class="dropdown-item"
-                                            key="t-create-product">Create Product</a>
-                                        <a href="#" class="dropdown-item"
-                                            key="t-all-products">All Products</a>
-                                        <a href="#" class="dropdown-item"
-                                            key="t-print-labels">Print Labels</a>
-                                        <a href="#" class="dropdown-item"
+                                        <a href="{% url 'materials:material_create' %}" class="dropdown-item"
+                                            key="t-create-product">Create Material</a>
+                                        <a href="{% url 'materials:material_list' %}" class="dropdown-item"
+                                            key="t-all-products">All Materials</a>  
+                                        <a href="{% url 'materials:material_create' %}" class="dropdown-item"
                                             key="t-category">Categories</a>
-                                        <a href="#" class="dropdown-item"
+                                        <a href="{% url 'materials:brand' %}" class="dropdown-item"
                                             key="t-brand">Brands</a>
-                                        <a href="#" class="dropdown-item"
+                                        <a href="{% url 'materials:unit' %}" class="dropdown-item"
                                             key="t-unit">Unit</a>
                                         <!-- <a href="#" class="dropdown-item"
                                             key="t-images">Images</a> -->
@@ -100,23 +98,24 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                            <i class="bx bx-customize me-2"></i><span key="t-adjustment">Adjustment</span>
+                            <i class="bx bx-customize me-2"></i><span key="t-adjustment">Inventory</span>
                             <div class="arrow-down"></div>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                            <a href="#" class="dropdown-item" key="t-create-adjustment">Create Adjustment</a>
-                            <a href="#" class="dropdown-item" key="t-all-adjustments">All Adjustments</a>
+                            <a href="{% url 'materials:inventory_list' %}" class="dropdown-item" key="t-create-adjustment">Inventory</a>
+                            <a href="{% url 'materials:transfer' %}" class="dropdown-item" key="t-all-adjustments">Transfer</a>
+                            <a href="{% url 'materials:transfer_list' %}" class="dropdown-item" key="t-all-adjustments">Transfer History</a>
                         </div>
                     </li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-pages" role="button">
-                            <i class="bx bx-customize me-2"></i><span key="t-jobs">Jobs</span>
+                            <i class="bx bx-customize me-2"></i><span key="t-jobs">Projects</span>
                             <div class="arrow-down"></div>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                            <a href="#" class="dropdown-item" key="t-create-job">Create Job</a>
-                            <a href="#" class="dropdown-item" key="t-all-jobs">All Jobs</a>
+                            <a href="{% url 'projects:add_project' %}" class="dropdown-item" key="t-create-job">Create Project</a>
+                            <a href="{% url 'projects:projects' %}" class="dropdown-item" key="t-all-jobs">All Projects</a>
                         </div>
                     </li>
 
@@ -126,8 +125,8 @@
                             <div class="arrow-down"></div>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="topnav-pages">
-                            <a href="#" class="dropdown-item" key="t-create-purchase">Create Purchase</a>
-                            <a href="#" class="dropdown-item" key="t-all-purchases">All Purchases</a>
+                            <a href="{% url 'materials:purchase_create' %}" class="dropdown-item" key="t-create-purchase">Create Purchase</a>
+                            <a href="{% url 'materials:purchase_list' %}" class="dropdown-item" key="t-all-purchases">All Purchases</a>
                         </div>
                     </li>
 

@@ -31,7 +31,7 @@
                                     
                                     {% if field.name == 'city' %}
                                     <a href="{% url 'materials:city_pop' %}" id="add_city" onclick="return showAddPopup(this);">
-                                        <i class="bx bx-plus-medical"></i>
+                                        New city
                                     </a>
                                     {% endif %}
                                 </div>
@@ -89,5 +89,11 @@
             $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
             win.close();
         }
+        $(function(){
+            $("#id_name").addClass('form-control');
+            $("#id_address").addClass('form-control');
+            $("#id_contact").addClass('form-control');
+            $("#id_city").addClass('form-control');
+        })
     </script>
 {% endblock %}

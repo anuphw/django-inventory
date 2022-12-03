@@ -1,6 +1,6 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block title %}{{ form_name }}{% endblock %}
+{% block title %}Transfer Material{% endblock %}
 {% block extra_css %}
     <!-- DataTables -->
     <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
@@ -14,114 +14,93 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title mb-4">Purchase</h4>
-                    <div action="" method="post" enctype="multipart/form-data">
+                    <h4 class="card-title mb-4">Transfer</h4>
+                    <form action="" method="post" enctype="multipart/form-data">
                         {% for hidden_field in form.hidden_fields %}
                             {{ hidden_field.errors }}
                             {{ hidden_field }}
                         {% endfor %}
                         {% csrf_token %}
                         {{ form.non_form_errors }}
-                        {% for field in form %}
-                        {{ field.errors }}
-                        {% if forloop.counter|divisibleby:2 %}
+
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
-                                    {% if field.name == 'date' %}
-                                    <input type="date" name="date" required="" id="id_date">
-                                    {% else %} 
-                                    {{ field }}
-                                    {% endif %}
+                                    {{ form.date.errors }}
+                                    <label for="example-text-input" class="form-label">{{ form.date.label_tag }}</label> 
+                                    
+                                    <input type="date" name="date" required="" id="id_date" class="form-control">
                                 </div>
                             </div>
-                            {% else %}
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
-                                    {% if field.name == 'date' %}
-                                    <input type="date" name="date" required="" id="id_date">
-                                    {% else %} 
-                                    {{ field }}
-                                    {% endif %}
+                                    {{ form.source.errors }}
+                                    <label for="example-text-input" class="form-label">{{ form.source.label_tag }}</label> 
+                                    {{ form.source }}
                                 </div>
                             </div>
                         </div>
-                        {% endif %} 
-                        {% endfor %}
-                        {% if not form.count|divisibleby:2 %} 
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-        
-                        {% if formset %}
+
                         <div class="row">
-                            <div class="col-xl-4">
-                                <h3>Materials</h3>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.destination.errors }}
+                                    <label for="example-text-input" class="form-label">{{ form.destination.label_tag }}</label> 
+                                    {{ form.destination }}
+                                </div>
                             </div>
-                            <div class="col-xl-4">
-                                
-                            </div>
-                            
-                            <div class="col-xl-4 page-title-right">
-                                <button id='add-more' class="btn btn-primary btn-sm waves-effect waves-light" type='button'>Add more</button>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.project.errors }}
+                                    <label for="example-text-input" class="form-label">{{ form.project.label_tag }}</label> 
+                                    {{ form.project }}
+                                </div>
                             </div>
                         </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-xl-4">
+                                                <h3>Materials</h3>
+                                            </div>
+                                            <div class="col-xl-4">
+                                                
+                                            </div>
+                                            
+                                            <div class="col-xl-4 page-title-right">
+                                                <button id='add-more' class="btn btn-primary btn-sm waves-effect waves-light" type='button'>Add more</button>
+                                            </div>
+                                        </div>
 
-                            {{ formset.management_form }}
+                                            {{ formset.management_form }}
 
-                            <div id='material-form-list'>
-                                {% for form in formset %}
-                                        <div class='material-form'>
-                                            <div class="row">
-                                            {% for field in form %}
-                                            {% if not field.is_hidden %}
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
-                                                        {{ field }} 
+                                            <div id='material-form-list'>
+                                                
+                                            </div>
+
+                                            <div id='empty-form' class='hidden' style="display: none;">
+                                                <div class='material-form'>
+                                                    <div class="row">
+                                                    {% for field in formset.empty_form %}
+                                                        {% if not field.is_hidden %}
+                                                        <div class="col-md-4">
+                                                            <div class="mb-3">
+                                                                <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
+                                                                {{ field }}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %} 
                                                     </div>
                                                 </div>
-                                            {% endif %}
-                                            {% endfor %} 
-                                            </div>
-                                        </div>
-                                {% endfor %}
-                            </div>
-
-                            <div id='empty-form' class='hidden'>
-                                <div class='material-form'>
-                                    <div class="row">
-                                    {% for field in formset.empty_form %}
-                                        {% if not field.is_hidden %}
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
-                                                {{ field }}
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                    {% endfor %} 
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        {% endif %}
-
-                        
-                    {% if update %}
-                        <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Update</button>
-                    {% else %} 
-                        <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Create</button>
-                    {% endif %}
+                                            </div>                                        
+                                    
+                                        <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Create</button>
+                                    
                     </form>
                     
                 </div>
@@ -180,6 +159,7 @@
             const currentFormCount = currentMaterialForms.length // + 1
             const formCopyTarget = document.getElementById('material-form-list')
             const copyEmptyFormEl = document.getElementById('empty-form').cloneNode(true)
+            copyEmptyFormEl.style.display = "block"
             copyEmptyFormEl.setAttribute('class', 'material-form')
             copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
             const regex = new RegExp('__prefix__', 'g')
@@ -188,5 +168,35 @@
             // now add new empty form element to our html form
             formCopyTarget.append(copyEmptyFormEl)
         }
+        $(function(){
+            $("#id_source").addClass('form-control');
+            $("#id_destination").addClass('form-control');
+            $("#id_project").addClass('form-control');
+            $("#id_source").change(function(){
+                const source = $(this).val()
+                $("#id_destination option").prop('disabled', false);
+                $("#id_destination option[value='"+source+"']").prop('disabled',true);
+            });
+            $("#id_destination").change(function(){
+                const destination = $(this).val()
+                console.log(destination);
+                $("#id_source option").prop('disabled', false);
+                $("#id_source option[value='"+destination+"']").prop('disabled',true);
+                if (destination.length>0){
+                    $("#id_project option").prop('disabled', true);
+                } else {
+                    $("#id_project option").prop('disabled', false);
+                }
+            });
+            $("#id_project").change(function(){
+                const project = $(this).val()
+                console.log(project);
+                if (project.length>0){
+                    $("#id_destination option").prop('disabled', true);
+                } else {
+                    $("#id_destination option").prop('disabled', false);
+                }
+            });
+        })
     </script>
 {% endblock %}

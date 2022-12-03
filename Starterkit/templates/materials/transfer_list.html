@@ -1,0 +1,91 @@
+{% extends 'partials/base.html' %}
+{% block title %}Transfers{% endblock %}
+{% load static %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <h2>Transfers</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <a href="{% url 'materials:transfer' %}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                    Create Transfer
+                                </a>
+                            </div>
+                        </div><!-- end col-->
+                    </div>
+
+                    <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Project</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for transfer in materialtransfer_list %}
+                        <tr>
+                            <td><a href="{{ transfer.get_absolute_url }}">
+                                {{ transfer.date }}</a>
+                            </td>
+                            <td>{{ transfer.source}}</td>
+                            <td>{{ transfer.destination }}</td>
+                            <td>{{transfer.project}}</td>
+                            <td>{{transfer.user}}</td>
+                            <td><a href="{{ transfer.delete_url }}">delete</a></td>
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+
+                </div>
+            </div>
+        </div> <!-- end col -->
+    </div>
+
+{% endblock %}
+
+
+{% block extra_javascript %}
+        <!-- Required datatable js -->
+        <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+        <!-- Buttons examples -->
+        <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+        <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+        <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+        
+        <!-- Responsive examples -->
+        <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+        <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{% static 'js/pages/datatables.init.js' %}"></script>    
+{% endblock %}

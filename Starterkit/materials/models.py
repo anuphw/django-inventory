@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from projects.models import *
 from clients.models import *
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
@@ -190,12 +192,15 @@ class MaterialTransfer(models.Model):
     project =  models.ForeignKey(Project,on_delete=models.SET_NULL,null=True, blank=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
 
+    @property
+    def get_absolute_url(self):
+        return reverse('materials:transfer_detail',kwargs={'pk':self.id})
     
-
-    def clean(self):
-        super().clean()
-        if self.destination is None and self.project is None:
-            raise ValidationError('Both destination and project cannot be empty')
+    @property
+    def delete_url(self):
+        return reverse('materials:transfer_delete', kwargs={'pk': self.id})
+    
+    
 
 class MaterialQtyTransfer(models.Model):
     material = models.ForeignKey(Material,on_delete=models.CASCADE)

@@ -483,19 +483,49 @@ class MaterialTransferCreateView(CreateView):
     
     def post(self, request, *args, **kwargs):
         materials = TransferFormSet(request.POST)
+        print(materials)
         transfer = TransferForm(request.POST)
         if materials.is_valid() and transfer.is_valid():
             return self.form_valid(materials,transfer)
+        else:
+            return MaterialTransferCreateView()
     
     def form_valid(self, materials,transfer):
         user = self.request.user
         parent = transfer.save(commit = False)
         parent.user = user
         parent.save()
+        print('*'*20)
+        print('parent :',parent)
+        print('*'*20)
         for material in materials:
-            child = material.save(commit=False)
-            child.purchase = parent
-            print('*'*20)
-            print(child)
-            child.save()
+            
+            print('child.name',material.cleaned_data)
+            if material.cleaned_data:
+                child = material.save(commit=False)
+                child.transfer = parent
+                print('*'*20)
+                print(child.material,child.quantity)
+                print('*'*20)
+                child.save()
         return HttpResponseRedirect(reverse('materials:transfer_list'))
+
+
+class TransferListView(ListView):
+    model = MaterialTransfer
+    template_name = 'materials/transfer_list.html'
+
+class TransferDetailView(DetailView):
+    model = MaterialTransfer
+    template_name = 'materials/transfer_detail.html'
+
+class TransferDeleteView(DeleteView):
+    model = MaterialTransfer
+    success_url = reverse_lazy('materials:transfer_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(reverse_lazy('materials:transfer_list'))   
