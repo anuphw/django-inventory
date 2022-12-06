@@ -10,7 +10,7 @@ from django.urls import reverse
 from django_currentuser.middleware import (
     get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
 def file_size(value): # add this to some file where you can import it from
@@ -18,28 +18,19 @@ def file_size(value): # add this to some file where you can import it from
     if value.size > limit:
         raise ValidationError('File too large. Size should not exceed 2 MiB.')
 
-
-STATUSES = (
-    ('1','Inquiry'),
-    ('2','Quotation Sent'),
-    ('3','Negotation'),
-    ('4','Processing'),
-    ('5','Delivering'),
-    ('6','Delivered'),
-    ('7','Complete'),
-    ('8','Cancelled'),
-)
-
+PERCENTAGE_VALIDATOR = [MinValueValidator(0), MaxValueValidator(100)]
 
 
 class Status(models.Model):
-    status = models.CharField(max_length=20,choices=STATUSES)
+    status = models.CharField(max_length=20)
+    order = models.PositiveSmallIntegerField(default=1)
+    probability = models.IntegerField(default=50,validators=PERCENTAGE_VALIDATOR)
     objects = FirstManager()
     class Meta:
         verbose_name_plural = '1. Statuses'
 
     def __str__(self) -> str:
-        return self.get_status_display()
+        return f"{self.order} - {self.status}"
 
 
 

@@ -1,10 +1,29 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, View
 from django.views.generic.edit import FormView
 from .models import *
 from .forms import ProjectForm, FileUploadForm
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
+
+
+class StatusView(View):
+    def get(self,request):
+        context = {'status':Status.objects.order_by('order').all()}
+        return render(request,'projects/status.html',context=context)
+    
+    def post(self,request):
+        ids = []
+        for k in request.POST.keys():
+            if 'order-' in k:
+                ids.append(k[6:])
+        print(f"ids: {ids}")
+        for i in ids:
+            order, status, prob = int(request.POST['order-'+i][1:]), request.POST['status-'+i], float(request.POST['prob-'+i])
+            Status.objects.filter(pk=i).update(order=order,status=status,probability=prob)
+            print(f"order: {order} # status: {status} # prob: {prob}")
+        return HttpResponseRedirect(reverse('projects:status'))
+
 
 class ProjectListView(ListView):
     model = Project

@@ -15,4 +15,5 @@ urlpatterns = [
     path('upload/',login_required(handle_upload_file),name='upload'),
     path('file/<int:pk>/delete',login_required(ProjectFileDeleteView.as_view()),name='file_delete'),
     path('kanban/',login_required(kanbanboard),name='kanbanboard'),
+    path('status/',StatusView.as_view(),name='status')
 ]

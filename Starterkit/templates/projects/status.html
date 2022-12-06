@@ -1,0 +1,68 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}{{ client.name|title }}{% endblock title %}
+{% block extra_css %}
+    <link href="{% static 'libs/dragula/dist/dragula.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+
+
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <h4>Statuses</h4>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div id="allStatuses" class="pb-1 task-list">
+                        {% for s in status %} 
+                        <div class="card task-box" id="status-{{ s.id }}">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-1">
+                                        <div>
+                                            <input type="hidden" id="order-{{ s.id }}" name="order-{{ s.id }}" value="#{{ s.order }}">
+                                            <span id="order-{{ s.id }}">#{{ s.order }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-5">
+                                        <div>
+                                            <input type="text" class='form-control' name="status-{{ s.id }}" id="status-{{ s.id }}" value={{ s.status }}>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div>
+                                            <input type="range" class="form-range" name="prob-{{ s.id }}" id="prob-{{ s.id }}" oninput="this.nextElementSibling.value = this.value" value="{{ s.probability }}">
+                                            <output>{{ s.probability }}</output>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="submit" value="Update">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    
+{% endblock %}
+{% block extra_javascript %}
+
+<script src="{% static 'libs/dragula/dist/dragula.min.js' %}"></script>
+<script>
+    dragula([document.getElementById("allStatuses")])
+    .on('drop',function(e1){
+        $("input[id*=order]").each(function(i,el){
+            el.value = "#"+(i+1).toString();
+        });
+        $("span[id*=order]").each(function(i,el){
+            el.innerHTML = "#"+(i+1).toString();
+        });
+    })
+</script>
+
+{% endblock %}
