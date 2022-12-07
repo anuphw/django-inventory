@@ -32,6 +32,12 @@ class Status(models.Model):
     def __str__(self) -> str:
         return f"{self.order} - {self.status}"
 
+    @property
+    def delete_url(self):
+        return reverse('projects:status_delete',kwargs={'pk': self.id})
+
+
+
 
 
 class Project(models.Model):
@@ -113,3 +119,8 @@ class ProjectTimeline(models.Model):
     
     def __str__(self):
         return self.notes
+
+class Product(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField()
+    

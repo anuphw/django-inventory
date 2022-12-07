@@ -1,7 +1,15 @@
 from django import forms
 from .models import *
-from clients.models import Client, ClientContact
+from django.forms.models import modelformset_factory
 
+
+
+class StatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ('status','order','probability')
+    
+StatusFormSet = modelformset_factory(Status,form=StatusForm,extra=0)
 
 
 class ProjectForm(forms.ModelForm):

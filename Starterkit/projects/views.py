@@ -17,12 +17,31 @@ class StatusView(View):
         for k in request.POST.keys():
             if 'order-' in k:
                 ids.append(k[6:])
-        print(f"ids: {ids}")
         for i in ids:
             order, status, prob = int(request.POST['order-'+i][1:]), request.POST['status-'+i], float(request.POST['prob-'+i])
             Status.objects.filter(pk=i).update(order=order,status=status,probability=prob)
             print(f"order: {order} # status: {status} # prob: {prob}")
         return HttpResponseRedirect(reverse('projects:status'))
+
+class StatusCreateView(View):
+    def post(self,request):
+        status = request.POST['status_name']
+        prob = request.POST['prob']
+        order = int(Status.objects.order_by('-order').first().order+1)
+        Status(status= status, order = order, probability = prob).save()
+        return HttpResponseRedirect(reverse('projects:status'))
+
+
+
+class StatusDeleteView(DeleteView):
+    model = Status
+    def get_success_url(self):  
+        return reverse('projects:status')
+    def get(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+    def form_valid(self, form):
+        form.save()
+        return reverse('projects:status')
 
 
 class ProjectListView(ListView):

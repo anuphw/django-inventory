@@ -10,7 +10,42 @@
     <div class="row">
         <div class="card">
             <div class="card-body">
-                <h4>Statuses</h4>
+                <div class="row">
+                    <div class="col-lg-10">
+                        <h4>Statuses</h4>
+                    </div>
+                    <div class="col-lg-2">
+                        <a class="btn btn-primary" role="button" onclick="$('#newStatus').toggle(500);">
+                            New Status
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="newStatus" style="display: none;">
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'projects:status_create' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3 row">
+                        <label for="status" class="col-md-2 col-form-label">Status</label>
+                        <input type="text" name="status_name" id="status_name" class="form-control" placeholder="Status">
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="prob" class="col-md-2 col-form-label">Probability</label>
+                        <input type="range" class="form-range" name="prob" id="prob" oninput="this.nextElementSibling.value = this.value" value="50">
+                        <output>50</output>
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Create">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
                 <form action="" method="post">
                     {% csrf_token %}
                     <div id="allStatuses" class="pb-1 task-list">
@@ -21,7 +56,7 @@
                                     <div class="col-lg-1">
                                         <div>
                                             <input type="hidden" id="order-{{ s.id }}" name="order-{{ s.id }}" value="#{{ s.order }}">
-                                            <span id="order-{{ s.id }}">#{{ s.order }}</span>
+                                            <p class="fs-3" id="order-{{ s.id }}">#{{ s.order }}</p>
                                         </div>
                                     </div>
                                     
@@ -30,25 +65,54 @@
                                             <input type="text" class='form-control' name="status-{{ s.id }}" id="status-{{ s.id }}" value={{ s.status }}>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-5">
                                         <div>
                                             <input type="range" class="form-range" name="prob-{{ s.id }}" id="prob-{{ s.id }}" oninput="this.nextElementSibling.value = this.value" value="{{ s.probability }}">
                                             <output>{{ s.probability }}</output>
                                         </div>
                                     </div>
-                                    
+                                    <div class="col-lg-1">
+                                        <div>
+                                            <a href="{{ s.delete_url }}" role="button" class="btn btn-outline-danger waves-effect waves-light">
+                                                <i class="mdi mdi-delete"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
-                    <input type="submit" value="Update">
+                    <input class="btn btn-primary" type="submit" value="Update">
                 </form>
             </div>
         </div>
     </div>
 
-    
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="newStatus" aria-labelledby="newStatus">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="newStatus">Create Status</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form action="{% url 'projects:status_create' %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3 row">
+                    <label for="status" class="col-md-2 col-form-label">Status</label>
+                    <input type="text" name="status_name" id="status_name" class="form-control" placeholder="Status" data-bs-target="#sidebar_left" data-bs-toggle="offcanvas">
+                </div>
+                <div class="mb-3 row">
+                    <label for="prob" class="col-md-2 col-form-label">Probability</label>
+                    <input type="range" class="form-range" name="prob" id="prob" oninput="this.nextElementSibling.value = this.value" value="50">
+                    <output>50</output>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Create">
+            </form>
+        </div>
+    </div> 
+
+
+
 {% endblock %}
 {% block extra_javascript %}
 
@@ -59,7 +123,17 @@
         $("input[id*=order]").each(function(i,el){
             el.value = "#"+(i+1).toString();
         });
-        $("span[id*=order]").each(function(i,el){
+        $("p[id*=order]").each(function(i,el){
+            el.innerHTML = "#"+(i+1).toString();
+        });
+    })
+</script>
+<script>
+    $(document).ready(function(){
+        $("input[id*=order]").each(function(i,el){
+            el.value = "#"+(i+1).toString();
+        });
+        $("p[id*=order]").each(function(i,el){
             el.innerHTML = "#"+(i+1).toString();
         });
     })
