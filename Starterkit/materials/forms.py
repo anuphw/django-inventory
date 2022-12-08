@@ -9,7 +9,7 @@ class DateInput(forms.DateInput):
 class MaterialQtyForm(forms.ModelForm):
     class Meta:
         model = MaterialQty
-        fields = ['material','quantity']
+        fields = ['material','quantity','price']
     
     def __init__(self, *args, **kwargs):
         super(MaterialQtyForm, self).__init__(*args, **kwargs)

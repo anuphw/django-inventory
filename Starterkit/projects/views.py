@@ -33,6 +33,7 @@ class StatusCreateView(View):
 
 
 
+
 class StatusDeleteView(DeleteView):
     model = Status
     def get_success_url(self):  
@@ -76,9 +77,7 @@ class ProjectUpdateView(UpdateView):
         context['client'] = self.get_object().client
         context['update']= True
         contacts = [ i.id for i in self.get_object().contact_person.all() ]
-        
         context['current_contacts'] = contacts
-        # context['contact_person'] = ClientContact.objects.filter(client_id = context['client'])
         return context
     
     def form_valid(self, form):
@@ -89,10 +88,9 @@ class ProjectUpdateView(UpdateView):
         notes = ""
         # Create notes based on what is changed
         for f in form:
-            print('Form Data ***** ',f.name, '*'*4,f.data)
             if f.name in form.changed_data:
                 if f.name == 'contact_person':
-                    print(f.data)
+                    
                     new_contact = ClientContact.objects.get_first(f.data)
                     notes += f" {f.name} = {new_contact.name}."
                 elif f.name == 'status':

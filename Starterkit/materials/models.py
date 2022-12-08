@@ -179,6 +179,7 @@ class Purchase(models.Model):
 class MaterialQty(models.Model):
     material = models.ForeignKey(Material,on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    price = models.DecimalField(max_digits=10,decimal_places=2)
     purchase = models.ForeignKey(Purchase,on_delete=models.CASCADE)
 
 
