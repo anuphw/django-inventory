@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, View
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from .models import *
@@ -466,6 +466,89 @@ class PurchaseCreateView(CreateView):
             child.save()
         return HttpResponseRedirect(reverse('materials:purchase_list'))
 
+
+class PurchaseSimpleView(View):
+    def get(self,request):
+        context = {
+            'suppliers': Client.objects.order_by('name').all(),
+            'warehouses': Warehouse.objects.order_by('name').all(),
+            'projects': Project.objects.order_by('title').all(),
+            'materials': Material.objects.order_by('name').all()
+        }
+        return render(request,'materials/purchase_create_simple.html',context=context)
+    
+    def post(self,request):
+        print(request.POST)
+        p = request.POST
+        user = self.request.user
+        dt = p['date']
+        desc = p['description']
+        supplier = Client.objects.filter(pk=p['supplier']).first()
+        project = None
+        warehouse = None
+        if 'warehouse' in p.keys():
+            warehouse = Warehouse.objects.filter(pk=p['warehouse']).first()
+        elif 'project' in p.keys():
+            project = Project.objects.filter(pk=p['project']).first()
+            
+            
+        purchase = Purchase(
+            date = dt,
+            description = desc,
+            supplier = supplier,
+            warehouse = warehouse,
+            project = project,
+            user = user
+        )
+        purchase.save()
+
+        for k in p.keys():
+            if 'material_' in k:
+                material = Material.objects.filter(pk=p[k]).first()
+                qty = p['quantity_'+k[9:]]
+                price = p['price_'+k[9:]]
+                m = MaterialQty(
+                    material = material,
+                    quantity = qty,
+                    price = price,
+                    purchase = purchase
+                ).save()
+
+
+
+        return HttpResponseRedirect(reverse('materials:purchase_list'))
+
+# def post(self,request):
+#         p = request.POST
+#         user = self.request.user
+#         client = Client.objects.filter(pk=int(p['client'][0])).first()
+#         contacts = [ClientContact.objects.filter(pk=int(c)).first() for c in p.getlist('contact_person')]
+#         title = p['title'][0]
+#         desc = p['description'][0]
+#         status = Status.objects.filter(pk=int(p['status'][0])).first()
+#         del_add = p['delivary_address'][0]
+#         project = Project(
+#             client = client,
+#             user = user,
+#             title = title,
+#             description = desc,
+#             status = status,
+#             delivary_address = del_add
+#         )
+        
+#         project.save()
+#         for contact in contacts:
+#             project.contact_person.add(contact)
+#         for k in p.keys():
+#             if 'product_name_' in k:
+#                 product = Product(
+#                     name = p[k][0],
+#                     quantity = p['product_qty_'+k[13:]][0],
+#                     description = p['product_description_'+k[13:]][0],
+#                     project = project
+#                 ).save()
+#         return HttpResponseRedirect(project.get_absolute_url)
+
 class MaterialTransferCreateView(CreateView):
     model = MaterialTransfer
     forms = TransferForm
@@ -495,9 +578,7 @@ class MaterialTransferCreateView(CreateView):
         parent = transfer.save(commit = False)
         parent.user = user
         parent.save()
-        print('*'*20)
-        print('parent :',parent)
-        print('*'*20)
+        
         for material in materials:
             
             print('child.name',material.cleaned_data)
@@ -529,3 +610,19 @@ class TransferDeleteView(DeleteView):
     def form_valid(self, form):
         form.save()
         return HttpResponseRedirect(reverse_lazy('materials:transfer_list'))   
+
+
+class MaterialReturnView(View):
+    def post(self,request):
+        p = request.POST
+        dt = p['date']
+        user = request.user
+        project = Project.objects.get(pk=p['project'])
+        material = Material.objects.get(pk=p['material'])
+        qty = p['quantity']
+        warehouse = Warehouse.objects.get(pk=p['warehouse'])
+        inventory = Inventory.objects.get_or_create(material = material, warehouse=warehouse)
+        pre_qty = inventory.quantity
+        inventory.update(quantity = pre_qty + qty)
+        m_ret = MaterialReturn(project=project,inventory=inventory,quantity = qty,date=dt, user=user).save()
+        return HttpResponse(project.get_absolute_url)

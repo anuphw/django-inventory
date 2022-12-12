@@ -11,6 +11,17 @@ class StatusForm(forms.ModelForm):
     
 StatusFormSet = modelformset_factory(Status,form=StatusForm,extra=0)
 
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name','description']
+        
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
+ProductFormSet = modelformset_factory(Product,form=ProductForm,extra=0)
 
 class ProjectForm(forms.ModelForm):
     class Meta:

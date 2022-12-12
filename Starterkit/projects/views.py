@@ -2,7 +2,8 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, View
 from django.views.generic.edit import FormView
 from .models import *
-from .forms import ProjectForm, FileUploadForm
+from clients.models import *
+from .forms import ProjectForm, FileUploadForm, ProductFormSet
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 
@@ -32,7 +33,44 @@ class StatusCreateView(View):
         return HttpResponseRedirect(reverse('projects:status'))
 
 
+class ProjectSimpleCreateView(View):
+    def get(self,request):
+        context = {
+            'clients': Client.objects.filter(is_active=True).all(),
+            'statuses': Status.objects.order_by('order').all(),
+        }
+        return render(request,'projects/project_create_simple.html',context=context)
 
+    def post(self,request):
+        p = request.POST
+        user = self.request.user
+        client = Client.objects.filter(pk=int(p['client'][0])).first()
+        contacts = [ClientContact.objects.filter(pk=int(c)).first() for c in p.getlist('contact_person')]
+        title = p['title'][0]
+        desc = p['description'][0]
+        status = Status.objects.filter(pk=int(p['status'][0])).first()
+        del_add = p['delivary_address'][0]
+        project = Project(
+            client = client,
+            user = user,
+            title = title,
+            description = desc,
+            status = status,
+            delivary_address = del_add
+        )
+        
+        project.save()
+        for contact in contacts:
+            project.contact_person.add(contact)
+        for k in p.keys():
+            if 'product_name_' in k:
+                product = Product(
+                    name = p[k][0],
+                    quantity = p['product_qty_'+k[13:]][0],
+                    description = p['product_description_'+k[13:]][0],
+                    project = project
+                ).save()
+        return HttpResponseRedirect(project.get_absolute_url)
 
 class StatusDeleteView(DeleteView):
     model = Status
@@ -67,7 +105,7 @@ class ProjectUpdateView(UpdateView):
     
     def get_success_url(self):
         # return self.success_url
-        return self.get_object().get_absolute_url()
+        return self.get_object().get_absolute_url
 
     
     def get_context_data(self, **kwargs):
@@ -117,7 +155,7 @@ class ProjectCreateView(CreateView):
     fields = '__all__'
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return self.object.get_absolute_url
 
     def form_valid(self, form):
         user = self.request.user
@@ -142,19 +180,16 @@ class ProjectCreateView(CreateView):
         self.update = ProjectTimeline(project=self.object,status=status,notes = notes,user = user).save()
         return super().form_valid(form)
 
+
+
 class ProjectDeleteView(DeleteView):
     model = Project
 
-    def get_success_url(self):  
-        return reverse('projects:projects')
-
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER')
     
     def get(self, request, *args, **kwargs):
         return self.delete(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.save()
-        return reverse('projects:projects')
 
 
 class ProjectFileDeleteView(DeleteView):
@@ -162,7 +197,7 @@ class ProjectFileDeleteView(DeleteView):
     project = None
 
     def get_success_url(self):
-        return self.project.get_absolute_url()
+        return self.project.get_absolute_url
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -177,7 +212,7 @@ class ProjectFileDeleteView(DeleteView):
 def handle_upload_file(request):
     f = request.FILES['file']
     user = request.user
-    project_id = request.POST['project_id'][0]
+    project_id = request.POST['project_id']
     notes = request.POST['notes']
     project = Project.objects.get_first(project_id)
     pf = ProjectFiles(project=project
@@ -189,9 +224,18 @@ def handle_upload_file(request):
                     ,notes = f'Uploaded: {pf.get_file_name()} ## {notes}'
                     ,project_file = pf
                     ,user = user).save()
-    return HttpResponseRedirect(project.get_absolute_url())
+    return HttpResponseRedirect(project.get_absolute_url)
 
-def kanbanboard(request):
-    statuses = Status.objects.all()
-    return render(request,'projects/kanbanboard.html',{'statuses':statuses})
-    
+class KanbanBoard(View):
+    def get(self,request):
+        context = {
+            'statuses': Status.objects.order_by('order').all()
+        }
+        return render(request,'projects/kanbanboard.html',context=context)
+
+
+def changeStatus(self,request):
+    project = request.POST['project_id']
+    status = request.POST['status']
+
+    return ''

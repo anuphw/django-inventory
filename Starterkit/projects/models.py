@@ -13,6 +13,7 @@ from django_currentuser.db.models import CurrentUserField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
+
 def file_size(value): # add this to some file where you can import it from
     limit = 2 * 1024 * 1024
     if value.size > limit:
@@ -42,6 +43,7 @@ class Status(models.Model):
 
 class Project(models.Model):
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
     contact_person = models.ManyToManyField(ClientContact)
     title = models.CharField(max_length=100)
     description = models.TextField()
@@ -60,19 +62,35 @@ class Project(models.Model):
     @property
     def company_contacts(self):
         return ClientContact.objects.filter(client=self.client)
+    
     @property
     def selected_contacts(self):
         return self.contact_person
 
+    @property
     def get_delete_url(self):
         return reverse('projects:project_delete', kwargs={'pk':self.pk})
 
+    @property
     def get_edit_url(self):
         return reverse('projects:project_update', kwargs={'pk':self.pk})
 
+    @property
     def get_absolute_url(self):
         return reverse('projects:project_detail', kwargs={'pk':self.pk})
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.TextField()
+    quantity = models.DecimalField(max_digits=5,decimal_places=2)
+    project = models.ForeignKey(Project,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
     
+
 class ProjectFiles(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
     file = models.FileField(upload_to='documents/',validators=[file_size])
@@ -120,7 +138,5 @@ class ProjectTimeline(models.Model):
     def __str__(self):
         return self.notes
 
-class Product(models.Model):
-    name = models.CharField(max_length=30)
-    description = models.TextField()
-    
+
+

@@ -1,0 +1,215 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}New Project{% endblock %}
+
+{% block contents %}
+    
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title mb-4">New Purchase</h1>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="id_date" class="form-label">Date:</label>
+                                        <input type="date" name="date" required="" id="id_date">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="example-text-input" class="form-label">Description:</label>
+                                        <input type="text" name="description" maxlength="50" required="" id="id_description">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="example-text-input" class="form-label">Supplier:</label> 
+                                        <select name="supplier" required="" id="id_supplier">
+                                            <option value="" selected="" disabled>---------</option>
+                                            {% for supplier in suppliers %} 
+                                            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <a href="{% url 'clients:client_pop' target_id='id_supplier' %}" id="add_category" onclick="return showAddPopup(this);">
+                                            <i class="bx bx-plus-medical"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="example-text-input" class="form-label">Warehouse:</label>
+                                        <select name="warehouse" id="id_warehouse">
+                                            <option value="" selected="">---------</option>
+                                            {% for warehouse in warehouses %} 
+                                            <option value="{{ warehouse.id }}">{{ warehouse.name }}</option> 
+                                            {% endfor %}
+                                        </select>
+                                        <a href="{% url 'materials:warehouse_pop' %}" id="add_category" onclick="return showAddPopup(this);">
+                                            <i class="bx bx-plus-medical"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="example-text-input" class="form-label">Project:</label>
+                                        <select name="project" id="id_project">
+                                            <option value="" selected="">---------</option>
+                                            {% for project in projects %} 
+                                            <option value="{{ project.id }}">{{ project.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <a href="{% url 'projects:project_pop' %}" id="add_category" onclick="return showAddPopup(this);">
+                                            <i class="bx bx-plus-medical"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-4">
+                                    <h4 class="card-title mb-4">Materials</h4>
+                                </div>
+                                <div class="col-xl-4">
+                                </div>
+                                <div class="col-xl-4 page-title-right">
+                                    <button id="add-more" class="btn btn-primary btn-sm waves-effect waves-light" type="button" onclick="add_material()">Add more</button>
+                                </div>
+                            </div>
+
+                            <table id="materials" class="table mb-0">
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Delete</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select name="material_1" class="form-control" id="material_1">
+                                            <option value="" selected="">---------</option>
+                                            {% for material in materials %} 
+                                            <option value="{{ material.id }}">{{ material.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <a href="{% url 'materials:material_pop' target_id='material_1'%}" id="add_material" onclick="return showAddPopup(this);">
+                                            <i class="bx bx-plus-medical"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="quantity_1" step="0.01" class="form-control" id="quantity_1">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="price_1" step="0.01" class="form-control" id="price_1">
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+                            <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Create</button>
+                        </div>
+                                    
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary waves-effect waves-light">Create Project</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    
+{% endblock %}
+
+{% block extra_javascript %}
+    
+    <script type="text/javascript">
+        $(function(){
+            $("#id_warehouse").change(function(){
+                const destination = $(this).val()
+                console.log(destination);
+                if (destination.length>0){
+                    $("#id_project option").prop('disabled', true);
+                } else {
+                    $("#id_project option").prop('disabled', false);
+                }
+            });
+            $("#id_project").change(function(){
+                const project = $(this).val()
+                if (project.length>0){
+                    $("#id_warehouse option").prop('disabled', true);
+                } else {
+                    $("#id_warehouse option").prop('disabled', false);
+                }
+            });
+        });
+        function showAddPopup(triggeringLink) {
+            href = triggeringLink.href;
+            var win = window.open(href, '_blank', 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        };
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+            win.close();
+        };
+        
+        function add_material(){
+            var n = (Math.random() + 1).toString(36).substring(7);
+            const URL = "{% url 'materials:material_pop' %}";
+            var row = '<tr>\
+                            <td>\
+                                <select name="material_rowNo" class="form-control" id="material_rowNo">\
+                                    <option value="" selected="">---------</option>\
+                                    {% for material in materials %} \
+                                    <option value="{{ material.id }}">{{ material.name }}</option>\
+                                    {% endfor %}\
+                                </select>\
+                                <a href="URLmaterial_rowNo" id="add_category_rowNo" onclick="return showAddPopup(this);">\
+                                    <i class="bx bx-plus-medical"></i>\
+                                </a>\
+                            </td>\
+                            <td>\
+                                <input type="number" name="quantity_rowNo" step="0.01" class="form-control" id="quantity_rowNo">\
+                            </td>\
+                            <td>\
+                                <input type="number" name="price_rowNo" step="0.01" class="form-control" id="price_rowNo">\
+                            </td>\
+                            <td>\
+                                <a role="button" \
+                                class="btn btn-outline-danger waves-effect waves-light" \
+                                onclick="$(this).parent().parent().remove();">\
+                            <i class="mdi mdi-delete"></i></a>\
+                            </td>\
+                        </tr>'.replace(new RegExp('rowNo', 'g'),n.toString()).replace(new RegExp('URL','g'),URL)
+            $("#materials > tbody").append(row)
+            console.log(row)
+            
+        };
+        
+    </script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    
+{% endblock %}

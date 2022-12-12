@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'materials'
 
@@ -44,10 +46,10 @@ urlpatterns = [
     path('inventory_adj/',InventoryAdjListView.as_view(),name='inventory_adj_list'),
 
     path('purchases/',PurchasesListView.as_view(),name='purchase_list'),
-    path('purchases/add/',PurchaseCreateView.as_view(),name='purchase_create'),
+    path('purchases/add/',PurchaseSimpleView.as_view(),name='purchase_create'),
 
     path('transfer/',MaterialTransferCreateView.as_view(),name='transfer'),
     path('transfer_list/',TransferListView.as_view(),name='transfer_list'),
     path('transfer/<int:pk>/',TransferDetailView.as_view(),name='transfer_detail'),
     path('transfer/<int:pk>/delete',TransferDeleteView.as_view(),name='transfer_delete'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

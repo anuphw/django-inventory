@@ -209,6 +209,13 @@ class MaterialQtyTransfer(models.Model):
     transfer = models.ForeignKey(MaterialTransfer,on_delete=models.CASCADE)
 
 
+class MaterialReturn(models.Model):
+    date = models.DateField()
+    project =  models.ForeignKey(Project,on_delete=models.DO_NOTHING)
+    destination = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING)
+    inventory = models.ForeignKey(Inventory,on_delete=models.DO_NOTHING)
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
 
 
 
