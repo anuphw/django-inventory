@@ -132,7 +132,7 @@
                                 {% if tl.project_file %}
                                 <div class="row">
                                     <div class="col-lg-8">
-                                        <p>{{ tl.notes }}</p>
+                                        <p>{{ tl.notes|linebreaksbr }}</p>
                                     </div>
                                     <div class="col-lg-4">
                                         <a href="../..{{ tl.project_file.get_file_url }}" target="_blank" rel="noreferrer noopener">{{ tl.project_file.get_file_name }}</a>

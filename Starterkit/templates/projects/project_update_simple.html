@@ -104,7 +104,7 @@
                                 <input type="text" name="product_name_{{ product.id }}" id="product_name_{{ product.id }}" value="{{ product.name }}">
                             </td>
                             <td>
-                                <input type="number" name="product_qty_{{ product.id }}" id="product_qty_{{ product.id }}" min="0" value="0" step=".01" value="{{ product.quantity}}">
+                                <input type="number" name="product_qty_{{ product.id }}" id="product_qty_{{ product.id }}" min="0" step=".01" value="{{ product.quantity}}">
                             </td>
                             <td>
                                 <textarea name="product_description_{{ product.id }}" id="product_description_{{ product.id }}" cols="30" rows="2">{{ product.description }}</textarea>

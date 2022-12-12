@@ -144,13 +144,13 @@ class ProjectSimpleUpdateView(View):
         user = request.user
         notes = ''
         if p['title'] != project.title:
-            notes += f' updated title from "{project.title}" to "{p["title"]}"\n'
+            notes += f'updated title from "{project.title}" to "{p["title"]}" # '
             Project.objects.filter(pk=project.id).update(title=p['title'])
         if p['description'] != project.description:
-            notes += f' updated description from "{project.description}" to "{p["description"]}"\n'
+            notes += f'updated description from "{project.description}" to "{p["description"]}" # '
             Project.objects.filter(pk=project.id).update(description=p['description'])
         if p['delivery_address'] != project.delivery_address:
-            notes += f' updated delivery address from "{project.delivery_address}" to "{p["delivery_address"]}"\n'
+            notes += f'updated delivery address from "{project.delivery_address}" to "{p["delivery_address"]}" # '
             Project.objects.filter(pk=project.id).update(delivery_address=p['delivery_address'])
         # Record contacts change
         contacts = {}
@@ -159,14 +159,14 @@ class ProjectSimpleUpdateView(View):
         for c in project.selected_contacts:
             if c.id in contacts:
                 if f'contact_{c.id}' not in p.keys():
-                    notes += f'removed contact {c.name}\n'
+                    notes += f'removed contact {c.name} # '
                     project.contact_person.remove(c)
                 contacts[c.id][1] = True 
         for k in p.keys():
             if 'contact_' in k:
                 c = ClientContact.objects.get(pk=k[8:])
                 if not contacts[c.id][1]:
-                    notes += f'added contact {c.name}\n'
+                    notes += f'added contact {c.name} # '
                     project.contact_person.add(c)
         # record product changes
         for k in p.keys():
@@ -174,24 +174,24 @@ class ProjectSimpleUpdateView(View):
                 if isnum(k[13]):
                     prod = Product.objects.filter(pk=k[13:]).first()
                     if 'delete_'+k[13:] in p.keys():
-                        notes += f"deleted product {prod.id}-{prod.name}\n"
+                        notes += f"deleted product {prod.id}-{prod.name} # "
                         prod.delete()
                     else:
                         changed = False
                         if (p[k] != prod.name):
                             changed = True
-                            notes += f"changed name for product {prod.id}-{prod.name} to {p[k]}\n"
+                            notes += f"changed name for product {prod.id}-{prod.name} to {p[k]} # "
                             Product.objects.filter(pk=k[13:]).update(name=p[k])
                         if p['product_qty_'+k[13:]] != prod.quantity:
                             changed = True
-                            notes += f"changed quantity for product {prod.id}-{prod.name} to {p['product_qty_'+k[13:]]}\n"
+                            notes += f"changed quantity for product {prod.id}-{prod.name} to {p['product_qty_'+k[13:]]} # "
                             Product.objects.filter(pk=k[13:]).update(quantity=p['product_qty_'+k[13:]])
                         if p['product_description_'+k[13:]] != prod.description:
                             changed = True
-                            notes += f"changed product description for product {prod.id}-{prod.name} to {p['product_description_'+k[13:]]}\n"
+                            notes += f"changed product description for product {prod.id}-{prod.name} to {p['product_description_'+k[13:]]} # "
                             Product.objects.filter(pk=k[13:]).update(description=p['product_description_'+k[13:]])
                 else:
-                    notes += f"new product name = '{p[k]}', qty = '{p['product_qty_'+k[13:]]}' and description = '{p['product_description_'+k[13:]]}' is created.\n"
+                    notes += f"new product name = '{p[k]}', qty = '{p['product_qty_'+k[13:]]}' and description = '{p['product_description_'+k[13:]]}' is created. # "
                     Product(
                         project = project,
                         name = p[k],
