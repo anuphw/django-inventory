@@ -183,7 +183,6 @@ class MaterialAddPopup(CreateView):
             target_id = 'id_material'
         return HttpResponse('<script>window.opener.closePopup(window, "%s", "%s", "#%s");</script>' % (instance.pk, instance, target_id))
 
-
 class MaterialCreateView(CreateView):
     model = Material
     template_name = 'materials/material_create.html'
@@ -499,7 +498,7 @@ class PurchaseSimpleView(View):
             warehouse = warehouse,
             project = project,
             user = user
-        )
+        )   
         purchase.save()
 
         for k in p.keys():

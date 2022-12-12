@@ -6,7 +6,15 @@ from clients.models import *
 from .forms import ProjectForm, FileUploadForm, ProductFormSet
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
+from materials.models import Warehouse, Material, Inventory, MaterialReturn
 
+
+def isnum(x):
+    try:
+        _ = float(x)
+        return True
+    except:
+        return False
 
 class StatusView(View):
     def get(self,request):
@@ -94,7 +102,109 @@ class ProjectDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['fileForm'] = FileUploadForm()
+        materials = {}
+        for purchase in self.object.purchase_set.all():
+            for m in purchase.materialqty_set.all():
+                materials[m.material.name] = m.quantity
+        
+        for transfer in self.object.materialtransfer_set.all():
+            for m in transfer.materialqtytransfer_set.all():
+                if m.material.name not in materials:
+                    materials[m.material.name] = 0
+                materials[m.material.name] += m.quantity
+        
+        for rt in self.object.materialreturn_set.all():
+            if rt.inventory.material.name not in materials:
+                materials[rt.inventory.material.name] = 0
+            materials[rt.inventory.material.name] -= rt.quantity
+
+        context['materials'] = materials
         return context
+
+
+
+class ProjectSimpleUpdateView(View):
+    def get(self,request,pk):
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        contacts = {}
+        for c in project.company_contacts:
+            contacts[c.id] = [c,False]
+        for c in project.selected_contacts:
+            if c.id in contacts:
+                contacts[c.id][1] = True 
+        context = {
+            'project': project,
+            'contacts': contacts
+        }
+        return render(request,'projects/project_update_simple.html',context=context)
+    
+    def post(self,request,pk):
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        p = request.POST
+        user = request.user
+        notes = ''
+        if p['title'] != project.title:
+            notes += f' updated title from "{project.title}" to "{p["title"]}"\n'
+            Project.objects.filter(pk=project.id).update(title=p['title'])
+        if p['description'] != project.description:
+            notes += f' updated description from "{project.description}" to "{p["description"]}"\n'
+            Project.objects.filter(pk=project.id).update(description=p['description'])
+        if p['delivery_address'] != project.delivery_address:
+            notes += f' updated delivery address from "{project.delivery_address}" to "{p["delivery_address"]}"\n'
+            Project.objects.filter(pk=project.id).update(delivery_address=p['delivery_address'])
+        # Record contacts change
+        contacts = {}
+        for c in project.company_contacts:
+            contacts[c.id] = [c,False]
+        for c in project.selected_contacts:
+            if c.id in contacts:
+                if f'contact_{c.id}' not in p.keys():
+                    notes += f'removed contact {c.name}\n'
+                    project.contact_person.remove(c)
+                contacts[c.id][1] = True 
+        for k in p.keys():
+            if 'contact_' in k:
+                c = ClientContact.objects.get(pk=k[8:])
+                if not contacts[c.id][1]:
+                    notes += f'added contact {c.name}\n'
+                    project.contact_person.add(c)
+        # record product changes
+        for k in p.keys():
+            if ('product_name_' in k):
+                if isnum(k[13]):
+                    prod = Product.objects.filter(pk=k[13:]).first()
+                    if 'delete_'+k[13:] in p.keys():
+                        notes += f"deleted product {prod.id}-{prod.name}\n"
+                        prod.delete()
+                    else:
+                        changed = False
+                        if (p[k] != prod.name):
+                            changed = True
+                            notes += f"changed name for product {prod.id}-{prod.name} to {p[k]}\n"
+                            Product.objects.filter(pk=k[13:]).update(name=p[k])
+                        if p['product_qty_'+k[13:]] != prod.quantity:
+                            changed = True
+                            notes += f"changed quantity for product {prod.id}-{prod.name} to {p['product_qty_'+k[13:]]}\n"
+                            Product.objects.filter(pk=k[13:]).update(quantity=p['product_qty_'+k[13:]])
+                        if p['product_description_'+k[13:]] != prod.description:
+                            changed = True
+                            notes += f"changed product description for product {prod.id}-{prod.name} to {p['product_description_'+k[13:]]}\n"
+                            Product.objects.filter(pk=k[13:]).update(description=p['product_description_'+k[13:]])
+                else:
+                    notes += f"new product name = '{p[k]}', qty = '{p['product_qty_'+k[13:]]}' and description = '{p['product_description_'+k[13:]]}' is created.\n"
+                    Product(
+                        project = project,
+                        name = p[k],
+                        quantity = p['product_qty_'+k[13:]],
+                        description = p['product_description_'+k[13:]]
+                    ).save()
+        ProjectTimeline(
+            project = project,
+            notes = notes,
+            status = project.status,
+            user = user
+        ).save()
+        return HttpResponseRedirect(project.get_absolute_url)
 
 
 class ProjectUpdateView(UpdateView):
@@ -232,6 +342,65 @@ class KanbanBoard(View):
             'statuses': Status.objects.order_by('order').all()
         }
         return render(request,'projects/kanbanboard.html',context=context)
+
+
+class MaterialReturnView(View):
+    def get(self,request, pk):
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        materials = {}
+        for purchase in project.purchase_set.all():
+            for m in purchase.materialqty_set.all():
+                materials[m.material.name] = [m.material,m.quantity]
+        
+        for transfer in project.materialtransfer_set.all():
+            for m in transfer.materialqtytransfer_set.all():
+                if m.material.name not in materials:
+                    materials[m.material.name] = [m.material,0]
+                materials[m.material.name][1] += m.quantity
+        
+        for rt in project.materialreturn_set.all():
+            if rt.inventory.material.name not in materials:
+                materials[rt.inventory.material.name] = [rt.inventory.material,0]
+            materials[rt.inventory.material.name][1] -= rt.quantity
+
+        context = {
+            'project': project,
+            'materials': materials,
+            'warehouses': Warehouse.objects.all()
+        }
+        return render(request,'projects/return_create_simple.html',context)
+    def post(self,request,pk):
+        p = request.POST
+        user = request.user
+        project = Project.objects.filter(pk=p['project']).first()
+        dt = p['date']
+        returns = []
+        notes = 'Returned:: '
+        for k in p.keys():
+            if 'material_' in k:
+                m = Material.objects.filter(pk=k[9:]).first()
+                q = float(p['ret_quantity_'+k[9:]])
+                w = p['warehouse_'+k[9:]]
+                if (q > 0) and len(w) > 0:
+                    returns.append([m,q,w])
+                    warehouse = Warehouse.objects.filter(pk=w).first()
+                    inventory, created = Inventory.objects.get_or_create(material=m,warehouse=warehouse)
+                    print('Inventory: ', inventory, created)
+                    notes += f'{m.name} qty: {q} --> {warehouse}, '
+                    mr = MaterialReturn(
+                        date=dt,
+                        project = project,
+                        inventory = inventory,
+                        quantity = q,
+                        user = user
+                    )
+                    mr.save()
+                    inventory.quantity += q
+                    inventory.save()
+        print(returns)
+        pt = ProjectTimeline(project=project,status=project.status,notes = notes,user = user).save()
+        return HttpResponseRedirect(project.get_absolute_url)
+    
 
 
 def changeStatus(self,request):

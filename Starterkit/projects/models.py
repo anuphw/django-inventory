@@ -48,7 +48,7 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     status = models.ForeignKey(Status,on_delete=models.DO_NOTHING)
-    delivary_address = models.CharField(max_length=200,default='')
+    delivery_address = models.CharField(max_length=200,default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = FirstManager()
@@ -65,7 +65,7 @@ class Project(models.Model):
     
     @property
     def selected_contacts(self):
-        return self.contact_person
+        return self.contact_person.all()
 
     @property
     def get_delete_url(self):
@@ -125,7 +125,7 @@ class ProjectTimelineManager(models.Manager):
 
 class ProjectTimeline(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
-    status = models.ForeignKey(Status,on_delete=models.DO_NOTHING)
+    status = models.ForeignKey(Status,on_delete=models.DO_NOTHING, null=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
     project_file = models.ForeignKey(ProjectFiles,on_delete=models.SET_NULL,null=True)
     notes = models.TextField(null=False)

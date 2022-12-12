@@ -1,0 +1,108 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Returns{% endblock %}
+{% block contents %}
+{% block extra_css %} 
+<style>
+    input[readonly] {
+    border:0px;
+}
+</style>
+{% endblock %} 
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h4>Project Details</h4>
+                <table class="table table-wrap mb-0">
+                    <tr>
+                        <td><b>Project</b></td>
+                        <td><a href="{{ project.client.get_absolute_url }}">{{ project.client.name|title }}</a></td>
+                    </tr>
+                    <tr>
+                        <td><b>Title</b></td>
+                        <td>{{ project.title }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Contact Person</b></td>
+                        <td>{% for person in project.contact_person.all %}
+                            <a href="{{ person.get_absolute_url }}">{{ person.name|title }}</a> ({{ person.contact_number }})
+                            {% endfor %}
+                        </td>
+                        <!-- <td>{{ project.contact_person.name }} ({{ project.contact_person.contact_number }})</td> -->
+                    </tr>
+                    <tr>
+                        <td><b>Project Status</b></td>
+                        <td>{{ project.status.get_status_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Description</b></td>
+                        <td>{{ project.description }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Delivery Address</b></td>
+                        <td>{{ project.delivary_address }}</td>
+                    </tr>
+
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        
+    <div class="card">
+        <div class="card-body">
+            <h4>Raw Materials</h4>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" id="project_id" name="project" value="{{ project.id }}">
+                <label for="date">Date: </label>
+                <input type="date" name="date" id="date" value="{% now 'DATE_FORMAT' %}" required>
+                {% if materials %}
+                <table class="table">
+                    <tr>
+                        <th>
+                            Material
+                        </th>
+                        <th>
+                            Return Qty
+                        </th>
+                        <th>
+                            Warehouse
+                        </th>
+                    </tr>
+                    {% for m,q in materials.items %} 
+                    <tr>
+                        <td>
+                            <input type="text" name="material_{{ q.0.id }}"  class="col-xs-3" id="material_{{ q.0.id }}" value="{{ m }}" readonly>
+                        </td>
+                        <td>
+                            <input type="number" name="ret_quantity_{{ q.0.id }}" class="col-xs-2" id="ret_quantity_{{ q.0.id }}" min="0" max="{{ q.1 }}" step="0.01" value="0">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
+                        </td>
+                        <td>
+                            <select name="warehouse_{{ q.0.id }}" class="col-xs-2" id="warehouse_{{ q.0.id }}">
+                                <option value="" selected>------------</option>
+                                {% for wh in warehouses %} 
+                                <option value="{{ wh.id }}">{{ wh.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %} 
+                </table>
+                {% endif %}
+                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Return</button>
+            </form>
+        </div>
+    </div>
+            
+    
+</div>
+
+
+
+    
+    
+{% endblock %}
+

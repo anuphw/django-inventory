@@ -1,0 +1,150 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Update Project{% endblock %}
+{% block contents %}
+    
+<div class="row">
+    <div class="col-lg-12">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title mb-4">Update Purchase</h1>
+                    <table class="table">
+                        <tr>
+                            <td>
+                                Client
+                            </td>
+                            <td>
+                                <a href="{{ project.client.get_absolute_url }}">
+                                    {{ project.client.name }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Contacts
+                            </td>
+                            <td>
+                                <table class="table">
+                                    <tr><td> </td><td> </td><td> </td></tr>
+                                    <tr>
+                                        {% for c,v in contacts.items %} 
+                                        <td>
+                                            {% if v.1 %} 
+                                            <input type="checkbox" name="contact_{{ c }}" id="contact_{{ c }}" checked>
+                                            {% else %} 
+                                            <input type="checkbox" name="contact_{{ c }}" id="contact_{{ c }}">
+                                            {% endif %} 
+                                            <label for="contact_{{ c }}" class="form-label"><a href="{{ v.0.get_absolute_url }}">{{v.0.name}}</a></label>
+                                        </td>
+                                            {% if forloop.counter|divisibleby:3 %} 
+                                        </tr><tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Title
+                            </td>
+                            <td>
+                                <input type="text" name="title" id="title" value="{{ project.title }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Description
+                            </td>
+                            <td>
+                                <textarea name="description" id="description" cols="30" rows="10">{{ project.description }}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Delivery Address
+                            </td>
+                            <td>
+                                <input type="text" name="delivery_address" id="delivery_address" value="{{ project.delivery_address }}">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body" id="products">
+                    <div class="row mb-2">
+                        <div class="col-lg-6">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <h2>Products</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="text-sm-end">
+                                <a role="button" class="btn btn-outline-primary waves-effect waves-light" onclick="add_product()">
+                                    Add Product
+                                </a>
+                            </div>
+                        </div>
+                    </div><!-- end col-->
+                    <table id="products" class="table mb-0">
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Description</th>
+                            <th>Delete</th>
+                        </tr>
+                        {% for product in project.product_set.all %}
+                        <tr>
+                            <td>
+                                <input type="text" name="product_name_{{ product.id }}" id="product_name_{{ product.id }}" value="{{ product.name }}">
+                            </td>
+                            <td>
+                                <input type="number" name="product_qty_{{ product.id }}" id="product_qty_{{ product.id }}" min="0" value="0" step=".01" value="{{ product.quantity}}">
+                            </td>
+                            <td>
+                                <textarea name="product_description_{{ product.id }}" id="product_description_{{ product.id }}" cols="30" rows="2">{{ product.description }}</textarea>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="delete_{{product.id }}" id="delete_{{product.id }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary waves-effect waves-light">Update</button>
+        </form>
+    </div>
+</div>
+   
+    
+{% endblock %}
+
+{% block extra_javascript %}
+    
+<script type="text/javascript">
+    function add_product(){
+        var n = r = (Math.random() + 1).toString(36).substring(7);
+        var row = '<tr>\
+                                <td><input type="text" name="product_name_rowNo" id="product_name_rowNo"></td>\
+                                <td><input type="number" name="product_qty_rowNo" id="product_qty_rowNo" min="0" value="0" step=".01"></td>\
+                                <td><textarea name="product_description_rowNo" id="product_description_rowNo" cols="30" rows="2"></textarea></td>\
+                                <td>\
+                                    <input type="hidden" name="delete_rowNo" value="False">\
+                                    <a role="button" \
+                                        class="btn btn-outline-danger waves-effect waves-light" \
+                                        onclick="$(this).parent().parent().remove();">\
+                                    <i class="mdi mdi-delete"></i></a>\
+                                </td>\
+                            </tr>'.replace(new RegExp('rowNo', 'g'),n.toString())
+        $("#products > tbody").append(row)
+        console.log(row)
+    }
+</script>
+
+{% endblock %}

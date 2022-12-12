@@ -192,6 +192,35 @@
             // now add new empty form element to our html form
             formCopyTarget.append(copyEmptyFormEl)
         }
-        
+    $(function(){
+            $("#id_source").addClass('form-control');
+            $("#id_destination").addClass('form-control');
+            $("#id_project").addClass('form-control');
+            $("#id_source").change(function(){
+                const source = $(this).val()
+                $("#id_destination option").prop('disabled', false);
+                $("#id_destination option[value='"+source+"']").prop('disabled',true);
+            });
+            $("#id_destination").change(function(){
+                const destination = $(this).val()
+                console.log(destination);
+                $("#id_source option").prop('disabled', false);
+                $("#id_source option[value='"+destination+"']").prop('disabled',true);
+                if (destination.length>0){
+                    $("#id_project option").prop('disabled', true);
+                } else {
+                    $("#id_project option").prop('disabled', false);
+                }
+            });
+            $("#id_project").change(function(){
+                const project = $(this).val()
+                console.log(project);
+                if (project.length>0){
+                    $("#id_destination option").prop('disabled', true);
+                } else {
+                    $("#id_destination option").prop('disabled', false);
+                }
+            });
+        })
     </script>
 {% endblock %}
