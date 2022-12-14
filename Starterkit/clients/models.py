@@ -3,6 +3,13 @@ from django.urls import reverse
 # Create your models here.
 
 class FirstManager(models.Manager):
+
+    def get_queryset(self):
+        try:
+            return super().get_queryset().filter(deleted_at__isnull = True)
+        except:
+            return super().get_queryset()
+
     def get_first(self,pk):
         try:
             return super().get_queryset().filter(pk=pk).first()
@@ -18,6 +25,7 @@ class Client(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
     objects = FirstManager()
     def __str__(self):
         return self.name
