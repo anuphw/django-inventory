@@ -97,7 +97,19 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <h4>Raw Materials</h4>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h4>Raw Materials</h4>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="text-sm-end">
+                            <a href="{{ project.get_raw_return_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                Return
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
                 {% if materials %}
                 <table class="table">
                     <tr>

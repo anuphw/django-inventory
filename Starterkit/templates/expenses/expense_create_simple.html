@@ -1,0 +1,110 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}New Expense{% endblock %}
+{% block contents %}
+    
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title mb-4">New Expense</h1>
+                <form action="" method="post" onsubmit="return validate_source()">
+                    {% csrf_token %}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label for="date"  class="form-label">Date</label> 
+                                        <input type="date" name="date" id="date" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label for="id_warehouse"  class="form-label">Warehouse</label> 
+                                        <select name="warehouse" id="id_warehouse" class="form-control">
+                                            <option value="" selected>---------</option>
+                                            {% for wh in warehouses %} 
+                                            <option value="{{ wh.id }}">{{ wh.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label for="id_project"  class="form-label">Project</label> 
+                                        <select name="project" id="id_project" class="form-control">
+                                            <option value="" selected>---------</option>
+                                            {% for project in projects %} 
+                                            <option value="{{ project.id }}">{{ project.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-3">
+                                        <label for="id_category" class="form-label">Expense Category</label>
+                                        <select name="category" id="id_category" class="form-control" required>
+                                            <option value="" selected>---------</option>
+                                            {% for cat in exp_categories %} 
+                                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                            {% endfor %} 
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="id_amount" class="form-lable">Amount</label>
+                                        <input type="number" name="amount" id="id_amount" min="0" step=".01" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8">
+                                    <div class="mb-3">
+                                        <label for="id_description" class="form-label">Description</label>
+                                        <textarea name="description" id="id_description" cols="30" rows="5" class="form-control" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>      
+                    <button type="submit" class="btn btn-outline-primary waves-effect waves-light">Create Project</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+    
+{% endblock %}
+
+{% block extra_javascript %}
+<script>
+    $(function(){
+        $("#id_project").change(function(){
+            const project = $(this).val()
+            if (project.length>0){
+                $("#id_warehouse option").prop('disabled', true);
+            } else {
+                $("#id_warehouse option").prop('disabled', false);
+            }
+        });
+        $("#id_warehouse").change(function(){
+            const warehouse = $(this).val()
+            if (warehouse.length>0){
+                $("#id_project option").prop('disabled', true);
+            } else {
+                $("#id_project option").prop('disabled', false);
+            }
+        });
+    });
+    function validate_source(){
+        if (($("#id_warehouse").val() === "") && ($("#id_project").val() === "")){
+            alert('Choose either warehouse or project for the expense');
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+{% endblock %}

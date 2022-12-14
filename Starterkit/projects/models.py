@@ -78,7 +78,11 @@ class Project(models.Model):
     @property
     def get_absolute_url(self):
         return reverse('projects:project_detail', kwargs={'pk':self.pk})
-
+    
+    @property
+    def get_raw_return_url(self):
+        return reverse('projects:project_return', kwargs={'pk':self.pk})
+    
 
 class Product(models.Model):
     name = models.CharField(max_length=30)
