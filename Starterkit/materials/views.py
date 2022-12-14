@@ -12,7 +12,7 @@ from django.urls import reverse_lazy
 class CategoryCreateAndListView(CreateView):
     model = Category
     template_name = 'materials/category_create.html'
-    fields = '__all__'
+    fields = ['name']
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -28,7 +28,7 @@ class CategoryCreateAndListView(CreateView):
 class CategoryUpdateView(UpdateView):
     model = Category
     template_name = 'materials/category_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -57,7 +57,7 @@ class CategoryDeleteView(DeleteView):
 class BrandCreateAndListView(CreateView):
     model = Brand
     template_name = 'materials/brand_create.html'
-    fields = '__all__'
+    fields = ['name']
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -73,7 +73,7 @@ class BrandCreateAndListView(CreateView):
 class BrandUpdateView(UpdateView):
     model = Brand
     template_name = 'materials/brand_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -102,7 +102,7 @@ class BrandDeleteView(DeleteView):
 class UnitCreateAndListView(CreateView):
     model = Units
     template_name = 'materials/unit_create.html'
-    fields = '__all__'
+    fields = ['name']
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -118,7 +118,7 @@ class UnitCreateAndListView(CreateView):
 class UnitUpdateView(UpdateView):
     model = Units
     template_name = 'materials/unit_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -145,7 +145,7 @@ class UnitDeleteView(DeleteView):
 class CategoryAddPopup(CreateView):
     model = Category
     template_name = 'materials/category_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def form_valid(self, form):
         instance = form.save()
@@ -154,7 +154,7 @@ class CategoryAddPopup(CreateView):
 class BrandAddPopup(CreateView):
     model = Brand
     template_name = 'materials/brand_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def form_valid(self, form):
         instance = form.save()
@@ -163,7 +163,7 @@ class BrandAddPopup(CreateView):
 class UnitsAddPopup(CreateView):
     model = Units
     template_name = 'materials/unit_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def form_valid(self, form):
         instance = form.save()
@@ -173,7 +173,7 @@ class UnitsAddPopup(CreateView):
 class MaterialAddPopup(CreateView):
     model = Material
     template_name = 'materials/material_create.html'
-    fields = '__all__'
+    fields = ['name','code','category','brand','unit','image']
 
     def form_valid(self, form):
         instance = form.save()
@@ -186,7 +186,7 @@ class MaterialAddPopup(CreateView):
 class MaterialCreateView(CreateView):
     model = Material
     template_name = 'materials/material_create.html'
-    fields = '__all__'
+    fields = ['name','code','category','brand','unit','image']
 
     def get_success_url(self):
         return reverse('materials:material_list')
@@ -203,7 +203,7 @@ class MaterialCreateView(CreateView):
 class MaterialUpdateView(UpdateView):
     model = Material
     template_name = 'materials/material_create.html'
-    fields = '__all__'
+    fields = ['name','code','category','brand','unit','image']
 
     def get_success_url(self):
         return reverse('materials:material_list')
@@ -231,7 +231,7 @@ class MaterialDeleteView(DeleteView):
 class MaterialListView(ListView):
     model = Material
     template_name = 'materials/material_list.html'
-    fields = '__all__'
+    fields = ['name','code','category','brand','unit','image']
 
 
 # City
@@ -239,7 +239,7 @@ class MaterialListView(ListView):
 class CityCreateAndListView(CreateView):
     model = City
     template_name = 'materials/city_create.html'
-    fields = '__all__'
+    fields = ['name']
     
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -255,7 +255,7 @@ class CityCreateAndListView(CreateView):
 class CityUpdateView(UpdateView):
     model = City
     template_name = 'materials/city_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
@@ -283,7 +283,7 @@ class CityDeleteView(DeleteView):
 class CityAddPopup(CreateView):
     model = City
     template_name = 'materials/city_create.html'
-    fields = '__all__'
+    fields = ['name']
 
     def form_valid(self, form):
         instance = form.save()
@@ -293,7 +293,7 @@ class CityAddPopup(CreateView):
 class WarehouseAddPopup(CreateView):
     model = Warehouse
     template_name = 'materials/warehouse_create.html'
-    fields = '__all__'
+    fields = ['name','address','contact','city']
 
     def form_valid(self, form):
         instance = form.save()
@@ -303,7 +303,7 @@ class WarehouseAddPopup(CreateView):
 class WarehouseCreateView(CreateView):
     model = Warehouse
     template_name = 'materials/warehouse_create.html'
-    fields = '__all__'
+    fields = ['name','address','contact','city']
 
     def get_success_url(self):
         return reverse('materials:warehouse_list')
@@ -320,7 +320,7 @@ class WarehouseCreateView(CreateView):
 class WarehouseUpdateView(UpdateView):
     model = Warehouse
     template_name = 'materials/warehouse_create.html'
-    fields = '__all__'
+    fields = ['name','address','contact','city']
 
     def get_success_url(self):
         return reverse('materials:warehouse_list')
@@ -348,7 +348,7 @@ class WarehouseDeleteView(DeleteView):
 class WarehouseListView(ListView):
     model = Warehouse
     template_name = 'materials/warehouse_list.html'
-    fields = '__all__'
+    fields = ['name','address','contact','city']
 
 
 # Inventory
@@ -395,6 +395,8 @@ class InventoryUpdateView(UpdateView):
         adj.save()
         return super().form_valid(form)
 
+
+
 class InventoryDeleteView(DeleteView):
     model = Inventory
     success_url = reverse_lazy('materials:inventory_list')
@@ -409,13 +411,13 @@ class InventoryDeleteView(DeleteView):
 class InventoryListView(ListView):
     model = Inventory
     template_name = 'materials/inventory_list.html'
-    fields = '__all__'
+    fields = ['material','warehouse','low_level','quantity']
 
 # Inventory Adjustment
 class InventoryAdjListView(ListView):
     model = InventoryAdjustment
     template_name = 'materials/inventory_adj_list.html'
-    fields = '__all__'
+    fields = ['inventory','adjustment_amount']
 
 # Purchases
 
@@ -428,7 +430,7 @@ class PurchasesListView(ListView):
 class PurchaseDetailView(DetailView):
     model = Purchase
     template_name = '/materials/purchase_detail.html'
-    fields = '__all__'
+    fields = ['date','description','supplier','warehouse','project']
 
 class PurchaseCreateView(CreateView):
     model = Purchase
@@ -517,36 +519,7 @@ class PurchaseSimpleView(View):
 
         return HttpResponseRedirect(reverse('materials:purchase_list'))
 
-# def post(self,request):
-#         p = request.POST
-#         user = self.request.user
-#         client = Client.objects.filter(pk=int(p['client'][0])).first()
-#         contacts = [ClientContact.objects.filter(pk=int(c)).first() for c in p.getlist('contact_person')]
-#         title = p['title'][0]
-#         desc = p['description'][0]
-#         status = Status.objects.filter(pk=int(p['status'][0])).first()
-#         del_add = p['delivary_address'][0]
-#         project = Project(
-#             client = client,
-#             user = user,
-#             title = title,
-#             description = desc,
-#             status = status,
-#             delivary_address = del_add
-#         )
-        
-#         project.save()
-#         for contact in contacts:
-#             project.contact_person.add(contact)
-#         for k in p.keys():
-#             if 'product_name_' in k:
-#                 product = Product(
-#                     name = p[k][0],
-#                     quantity = p['product_qty_'+k[13:]][0],
-#                     description = p['product_description_'+k[13:]][0],
-#                     project = project
-#                 ).save()
-#         return HttpResponseRedirect(project.get_absolute_url)
+
 
 class MaterialTransferCreateView(CreateView):
     model = MaterialTransfer

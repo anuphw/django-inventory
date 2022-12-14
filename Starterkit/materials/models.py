@@ -7,12 +7,19 @@ from clients.models import *
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 # Create your models here.
 
 
 # models related to Material
 class Category(models.Model):
     name = models.CharField(max_length=50)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -27,6 +34,12 @@ class Category(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=50)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -41,6 +54,12 @@ class Brand(models.Model):
 
 class Units(models.Model):
     name = models.CharField(max_length=10)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -58,8 +77,14 @@ class Material(models.Model):
     code = models.CharField(max_length=6,null=False,unique=True)
     category = models.ForeignKey(Category,on_delete=models.CASCADE)
     brand = models.ForeignKey(Brand,on_delete=models.CASCADE)
-    units = models.ForeignKey(Units,on_delete=models.CASCADE)
+    unit = models.ForeignKey(Units,on_delete=models.CASCADE)
     image = models.ImageField(upload_to='material/',validators=[file_size],blank=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -92,6 +117,12 @@ class Material(models.Model):
 # Models related to warehouses
 class City(models.Model):
     name = models.CharField(max_length=20)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -110,6 +141,12 @@ class Warehouse(models.Model):
     address = models.CharField(max_length=50)
     contact = models.CharField(max_length=15)
     city = models.ForeignKey(City,on_delete=models.CASCADE)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     def __str__(self):
         return self.name
@@ -128,6 +165,13 @@ class Inventory(models.Model):
     warehouse = models.ForeignKey(Warehouse,on_delete=models.CASCADE)
     low_level = models.IntegerField(default=10)
     quantity = models.IntegerField(default=0)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
+
     
     class Meta:
         constraints = [
@@ -154,7 +198,12 @@ class InventoryAdjustment(models.Model):
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
 
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
     
 
     def __str__(self):
@@ -173,7 +222,12 @@ class Purchase(models.Model):
     warehouse = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING,null=True, blank=True)
     project = models.ForeignKey(Project,on_delete=models.DO_NOTHING,null=True, blank=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()  
 
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()  
     
 
 class MaterialQty(models.Model):
@@ -181,7 +235,12 @@ class MaterialQty(models.Model):
     quantity = models.DecimalField(max_digits=10,decimal_places=2)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     purchase = models.ForeignKey(Purchase,on_delete=models.CASCADE)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
 
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 
@@ -192,6 +251,12 @@ class MaterialTransfer(models.Model):
     destination = models.ForeignKey(Warehouse,on_delete=models.SET_NULL,null=True, blank=True,related_name='destination')
     project =  models.ForeignKey(Project,on_delete=models.SET_NULL,null=True, blank=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
     @property
     def get_absolute_url(self):
@@ -217,7 +282,12 @@ class MaterialReturn(models.Model):
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager()
 
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
 
 

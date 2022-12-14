@@ -1,0 +1,132 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Returns{% endblock %}
+{% block contents %}
+{% block extra_css %} 
+<style>
+    input[readonly] {
+    border:0px;
+}
+</style>
+{% endblock %} 
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h4>Project Details</h4>
+                <table class="table table-wrap mb-0">
+                    <tr>
+                        <td><b>Project</b></td>
+                        <td><a href="{{ project.client.get_absolute_url }}">{{ project.client.name|title }}</a></td>
+                    </tr>
+                    <tr>
+                        <td><b>Title</b></td>
+                        <td>{{ project.title }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Contact Person</b></td>
+                        <td>{% for person in project.contact_person.all %}
+                            <a href="{{ person.get_absolute_url }}">{{ person.name|title }}</a> ({{ person.contact_number }})
+                            {% endfor %}
+                        </td>
+                        <!-- <td>{{ project.contact_person.name }} ({{ project.contact_person.contact_number }})</td> -->
+                    </tr>
+                    <tr>
+                        <td><b>Project Status</b></td>
+                        <td>{{ project.status.get_status_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Description</b></td>
+                        <td>{{ project.description }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Delivery Address</b></td>
+                        <td>{{ project.delivery_address }}</td>
+                    </tr>
+
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        
+    <div class="card">
+        <div class="card-body">
+            <h4>Delivery Challan</h4>
+            {% if products %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" id="project_id" name="project" value="{{ project.id }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="date" class="form-label">Date: </label>
+                        <input type="date" name="date" id="date" value="{% now 'DATE_FORMAT' %}" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="challan_no" class="form-label">Challan No: </label>
+                        <input type="text" name="challan_no" id="challan_no" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="address" class="form-label">Address:</label>
+                        <input type="text" name="address" id="address" class="form-control" value="{{ project.delivery_address }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>Products</h3>
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Product
+                                    </th>
+                                    <th>
+                                        Send Quantity
+                                    </th>
+                                </tr>
+                                {% for p,q in products.items %} 
+                                <tr>
+                                    <td>
+                                        <input type="text" name="product_{{ p }}"  class="col-xs-3" id="product_{{ p }}" value="{{ q.0.name }}" class="form-control" readonly>
+                                        <a href="#" onclick="showhide('p_product_{{ p }}');">details</a>
+                                        <p id="p_product_{{ p }}" style="display: none">{{ q.0.description }}</p>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="send_quantity_{{ p }}" class="col-xs-2" id="send_quantity_{{ p }}" min="0" max="{{ q.1 }}" step="0.01" value="{{ q.1 }}" class="form-control">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
+                                    </td>
+                                </tr>
+                                {% endfor %} 
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Create</button>
+            </form>
+                {% else %} 
+                <h6>All products in the project are delivered.</h6>
+                {% endif %}
+                
+                
+        </div>
+    </div>
+            
+    
+</div>
+
+
+
+{% endblock %}
+
+    
+{% block extra_javascript %}
+<script>
+    function showhide(idx){
+        var e = document.getElementById(idx);
+        e.style.display = ((e.style.display!='none') ? 'none' : 'block');
+    }
+</script>
+
+{% endblock %}

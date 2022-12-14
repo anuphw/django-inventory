@@ -171,8 +171,8 @@ class ProjectSimpleUpdateView(View):
         # record product changes
         for k in p.keys():
             if ('product_name_' in k):
-                if isnum(k[13]):
-                    prod = Product.objects.filter(pk=k[13:]).first()
+                if isnum(k[13:]):
+                    prod = Product.objects.get(pk=k[13:])
                     if 'delete_'+k[13:] in p.keys():
                         notes += f"deleted product {prod.id}-{prod.name} # "
                         prod.delete()
@@ -255,14 +255,14 @@ class ProjectUpdateView(UpdateView):
 class ProjectPopView(CreateView):
     model = Project
     template_name = 'projects/project_create.html'
-    fields = '__all__'
+    fields = ['title','description','status','delivary_address']
 
 
 class ProjectCreateView(CreateView):
     model = Project
     # form_class = ProjectForm
     template_name = 'projects/project_create.html'
-    fields = '__all__'
+    fields = ['client','contact_person','title','description','status','delivary_address']
 
     def get_success_url(self):
         return self.object.get_absolute_url
@@ -402,6 +402,58 @@ class MaterialReturnView(View):
         return HttpResponseRedirect(project.get_absolute_url)
     
 
+
+class DeliveryChallanCreateView(View):
+    def get(self,request,pk):
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        products = {}
+        for product in project.product_set.all():
+            products[f'{product.id}'] = [product,product.quantity]
+        print(1,products)
+        for dc in project.deliverychallan_set.all():
+            for dp in dc.deliveryproduct_set.all():
+                print(dp.product.id)
+                if f'{dp.product.id}' in products:
+                    products[f'{dp.product.id}'][1] -= dp.quantity
+        print(2,products)
+        for p in products.keys():
+            if products[p][1] == 0:
+                products.pop(p)
+        print(3,products)
+        
+        context = {
+            'products': products,
+            'project': project,
+        }
+        return render(request,'projects/delivery_challan_simple.html',context=context)
+    def post(self,request,pk):
+        p = request.POST
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        dt = p['date']
+        cn = p['challan_no']
+        address = p['address']
+        user = request.user
+        dc = DeliveryChallan(
+            project = project,
+            date = dt,
+            challanNo = cn,
+            address = address,
+            user = user
+        )
+        dc.save()
+        products = []
+        for k in p.keys():
+            if 'product_' in k:
+                products.append(k[8:])
+                product = Product.objects.filter(pk=k[8:]).first()
+                qty = p['send_quantity_'+k[8:]]
+                DeliveryProduct(
+                    deliveryChallan = dc,
+                    product = product,
+                    quantity = qty
+                ).save()
+        
+        return self.get(request,pk)
 
 def changeStatus(self,request):
     project = request.POST['project_id']

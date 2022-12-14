@@ -19,13 +19,13 @@ class ClientDetailView(DetailView):
 class ClientCreateView(CreateView):
     model = Client
     template_name = 'clients/client_create.html'
-    fields = '__all__'
+    fields = ['name','address','contact_number']
 
 
 class ClientAddPopup(CreateView):
     model = Client
     template_name = 'clients/client_create.html'
-    fields = '__all__'
+    fields = ['name','address','contact_number']
 
     def form_valid(self, form):
         instance = form.save()
@@ -38,7 +38,7 @@ class ClientAddPopup(CreateView):
 
 class ClientUpdateView(UpdateView):
     model = Client
-    fields = '__all__'
+    fields = ['name','address','contact_number']
     template_name = 'clients/client_create.html'
 
     def get_context_data(self, **kwargs):

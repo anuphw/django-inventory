@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 # Create your models here.
 
 class FirstManager(models.Manager):
@@ -26,7 +27,12 @@ class Client(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)
-    objects = FirstManager()
+    objects = FirstManager() 
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()  
+
     def __str__(self):
         return self.name
     
@@ -40,7 +46,13 @@ class ClientContact(models.Model):
     client = models.ForeignKey(Client,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    objects = FirstManager()
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager() 
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()  
+        
     def get_absolute_url(self):
         return reverse('clients:client_contact_update', kwargs={'pk':self.pk})      
     

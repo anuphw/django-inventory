@@ -19,4 +19,5 @@ urlpatterns = [
     path('status/',StatusView.as_view(),name='status'),
     path('status/<int:pk>',StatusDeleteView.as_view(),name='status_delete'),
     path('status/new/',StatusCreateView.as_view(),name='status_create'),
+    path('<int:pk>/delivery',DeliveryChallanCreateView.as_view(),name='delivery_challan_create'),
 ]
