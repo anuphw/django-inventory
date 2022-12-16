@@ -112,9 +112,17 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class ProductReturn(models.Model):
+    date = models.DateField()
+    project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product,on_delete=models.DO_NOTHING)
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    description = models.TextField()
+
 class DeliveryChallan(models.Model):
     project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
     date = models.DateField()
+    vehicleNo = models.TextField(max_length=20,default="")
     challanNo = models.CharField(max_length=10)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     address = models.CharField(max_length=50)
@@ -188,6 +196,7 @@ class ProjectTimelineManager(models.Manager):
 class ProjectTimeline(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
     status = models.ForeignKey(Status,on_delete=models.DO_NOTHING, null=True)
+    type = models.TextField(max_length=50,null=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
     project_file = models.ForeignKey(ProjectFiles,on_delete=models.SET_NULL,null=True)
     notes = models.TextField(null=False)

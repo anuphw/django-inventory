@@ -409,17 +409,17 @@ class DeliveryChallanCreateView(View):
         products = {}
         for product in project.product_set.all():
             products[f'{product.id}'] = [product,product.quantity]
-        print(1,products)
+        
         for dc in project.deliverychallan_set.all():
             for dp in dc.deliveryproduct_set.all():
                 print(dp.product.id)
                 if f'{dp.product.id}' in products:
                     products[f'{dp.product.id}'][1] -= dp.quantity
-        print(2,products)
+        
         for p in products.keys():
             if products[p][1] == 0:
                 products.pop(p)
-        print(3,products)
+        
         
         context = {
             'products': products,
