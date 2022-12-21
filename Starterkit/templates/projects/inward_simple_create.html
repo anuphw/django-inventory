@@ -1,0 +1,129 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Inward Material{% endblock %}
+{% block contents %}
+{% block extra_css %} 
+<style>
+    input[readonly] {
+    border:0px;
+}
+</style>
+{% endblock %} 
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h4>Project Details</h4>
+                <table class="table table-wrap mb-0">
+                    <tr>
+                        <td><b>Project</b></td>
+                        <td><a href="{{ project.client.get_absolute_url }}">{{ project.client.name|title }}</a></td>
+                    </tr>
+                    <tr>
+                        <td><b>Title</b></td>
+                        <td>{{ project.title }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Contact Person</b></td>
+                        <td>{% for person in project.contact_person.all %}
+                            <a href="{{ person.get_absolute_url }}">{{ person.name|title }}</a> ({{ person.contact_number }})
+                            {% endfor %}
+                        </td>
+                        <!-- <td>{{ project.contact_person.name }} ({{ project.contact_person.contact_number }})</td> -->
+                    </tr>
+                    <tr>
+                        <td><b>Project Status</b></td>
+                        <td>{{ project.status.status }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Description</b></td>
+                        <td>{{ project.description }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Delivery Address</b></td>
+                        <td>{{ project.delivary_address }}</td>
+                    </tr>
+
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <form method="post"> 
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-body">
+                    <h4>Inward Materials</h4>
+                    {% if message %} 
+                        <span style="color:red">{{ message }}</span>
+                    {% endif %}
+                    <input type="hidden" id="project_id" name="project" value="{{ project.id }}">
+                    <label for="date" class="form-label">Date: </label>
+                    <input type="date" name="date" id="date" value="{{ date }}" class="form-control" required>
+                    <label for="challan" class="form-label">Challan No</label>
+                    <input type="text" name="challan" id="challan" class="form-control" required>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-body" id="products">
+                    <div class="row mb-2">
+                        <div class="col-lg-6">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <h2>Materials</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="text-sm-end">
+                                <a role="button" class="btn btn-outline-primary waves-effect waves-light" onclick="add_product()">
+                                    Add Material
+                                </a>
+                            </div>
+                        </div>
+                    </div><!-- end col-->
+                    <table id="products" class="table mb-0">
+                        <tr>
+                            <th>Inward Material</th>
+                            <th>Quantity</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" name="imaterial_1" id="imaterial_1"></td>
+                            <td><input type="number" name="imaterial_qty_1" id="imaterial_qty_1" min="0" value="0" step=".01"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div> 
+            <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+            
+    
+</div>
+
+
+
+    
+    
+{% endblock %}
+
+{% block extra_javascript %}
+    
+    <script type="text/javascript">
+        function add_product(){
+            var n = r = (Math.random() + 1).toString(36).substring(7);
+            var row = '<tr>\
+                            <td><input type="text" name="imaterial_rowNo" id="imaterial_rowNo"></td>\
+                            <td><input type="number" name="imaterial_qty_rowNo" id="imaterial_qty_rowNo" min="0" value="0" step=".01"></td>\
+                        </tr>'.replace(new RegExp('rowNo', 'g'),n.toString())
+            $("#products > tbody").append(row)
+            console.log(row)
+            
+        }
+    </script>
+
+{% endblock %}

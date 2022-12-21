@@ -23,7 +23,7 @@
                     </tr>
                     <tr>
                         <td><b>Title</b></td>
-                        <td>{{ project.title }}</td>
+                        <td><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></td>
                     </tr>
                     <tr>
                         <td><b>Contact Person</b></td>
@@ -35,7 +35,7 @@
                     </tr>
                     <tr>
                         <td><b>Project Status</b></td>
-                        <td>{{ project.status.get_status_display }}</td>
+                        <td>{{ project.status.status }}</td>
                     </tr>
                     <tr>
                         <td><b>Description</b></td>
@@ -49,11 +49,105 @@
                 </table>    
             </div>
         </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h4>Inward Material</h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-sm-end">
+                            <a href="{{ project.create_inward_challan_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                New
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <table id="table" class="table wrap">
+                    <tr>
+                        <th>Date</th>
+                        <th>Challan</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for ic in project.imchallan_set.all %} 
+                    <tr>
+                        <td>{{ ic.date }}</td>
+                        <td><a href="{{ ic.get_absolute_url }}">{{ic.challanNo}}</a></td>
+                        <td>
+                            <a href="{{ ic.get_delete_url }}" 
+                            title="Delete"
+                            class="btn btn-outline-danger waves-effect waves-light" 
+                            onclick="return confirm('Are you sure you want to delete this Challan?');">
+                                <i class="dripicons-cross"></i>
+                            </a></td>
+                    </tr>
+                    {% empty %} 
+                    <tr>
+                        <td rowspan="3">No Inward Material yet</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <h4>Deliveries</h4>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="text-sm-end">
+                            <a href="{{ project.create_challan_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                New
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <table id="table" class="table wrap">
+                    <tr>
+                        <th>Date</th>
+                        <th>Challan</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for dc in project.deliverychallan_set.all %} 
+                    <tr>
+                        <td>{{ dc.date }}</td>
+                        <td><a href="{{ dc.get_absolute_url }}">{{dc.challanNo}}</a></td>
+                        <td><a href="{{ dc.get_return_url }}"
+                            title="Return"
+                            class="btn btn-outline-primary waves-effect waves-light" >
+                            <i class="dripicons-return"></i>
+                        </a>
+                            <a href="{{ dc.get_delete_url }}" 
+                            title="Delete"
+                            class="btn btn-outline-danger waves-effect waves-light" 
+                            onclick="return confirm('Are you sure you want to delete this Challan?');">
+                                <i class="dripicons-cross"></i>
+                            </a></td>
+                    </tr>
+                    {% empty %} 
+                    <tr>
+                        <td rowspan="2">No delivery yet</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-body">
                 <h4>Project Files</h4>
                 
-                <table id="datatable" class="table table-bordered dt-responsive  wrap w-100">
+                <table id="table" class="table wrap">
+                    <tr>
+                        <th>File</th>
+                        <th>Action</th>
+                    </tr>
                     {% for file in project.projectfiles_set.all %}
                     <tr>
                         <td>
@@ -61,14 +155,14 @@
                         </td>
                         <td>
                             <a href="{{ file.get_delete_url }}" role="button" 
+                            title="Delete"
                                 class="btn btn-outline-danger waves-effect waves-light" 
                                 onclick="return confirm('Do you really want to delete {{ file.get_file_name }}');">
-                                <i class="mdi mdi-delete"></i>
+                                <i class="dripicons-cross"></i>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
-                
             </div>
         </div>
         <div class="card">
@@ -95,70 +189,98 @@
         </div>
     </div>
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h4>Raw Materials</h4>
-                    </div>
-                    <div class="col-sm-8">
-                        <div class="text-sm-end">
-                            <a href="{{ project.get_raw_return_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
-                                Return
-                            </a>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h4>Raw Materials</h4>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="text-sm-end">
+                                    <a href="{{ project.get_raw_return_url }}" role="button" class="btn btn-outline-primary waves-effect waves-light">
+                                        Return
+                                    </a>
+                                </div>
+                            </div>
                         </div>
+                        
+                        {% if materials %}
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Material
+                                </th>
+                                <th>
+                                    Quantity
+                                </th>
+                            </tr>
+                            {% for m,q in materials.items %} 
+                            <tr>
+                                <td>{{ m }}</td>
+                                <td>{{ q }}</td>
+                            </tr>
+                            {% endfor %} 
+                        </table>
+                        {% endif %}
                     </div>
                 </div>
-                
-                {% if materials %}
-                <table class="table">
-                    <tr>
-                        <th>
-                            Material
-                        </th>
-                        <th>
-                            Quantity
-                        </th>
-                    </tr>
-                    {% for m,q in materials.items %} 
-                    <tr>
-                        <td>{{ m }}</td>
-                        <td>{{ q }}</td>
-                    </tr>
-                    {% endfor %} 
-                </table>
-                {% endif %}
+            </div>
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Products</h4>
+                        {% if products %} 
+                        <table class="table">
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Delivered</th>
+                                <th>Returned</th>
+                                <th>Remaining</th>
+                            </tr>
+                            {% for _,pr in products.items %} 
+                            <tr>
+                                <td><a href="#" onclick="showhide('p_product_{{ p }}');">{{ pr.0.name }}</a>
+                                    <p id="p_product_{{ p }}" style="display: none">{{ pr.0.description }}</p>
+                                </td>
+                                <td>{{ pr.1 }} </td>
+                                <td>{{ pr.2 }}</td>
+                                <td>{{ pr.3 }}</td>
+                                <td>{{ pr.4 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Deal Timeline</h4>
-                
-                {% for tl in project.projecttimeline_set.all %} 
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header bg-transparent border-bottom">
-                                {{ tl.user }} {{ tl.created_at }}
+                <h4>Timeline</h4>
+                <ul class="verti-timeline list-unstyled">
+                    {% for tl in project.projecttimeline_set.all %} 
+                    <li class="event-list">
+                        <div class="event-timeline-dot">
+                            <i class="bx bx-right-arrow-circle"></i>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="bx bx-copy-alt h2 text-primary"></i>
                             </div>
-                            <div class="card-body">
-                                {% if tl.project_file %}
-                                <div class="row">
-                                    <div class="col-lg-8">
-                                        <p>{{ tl.notes|linebreaksbr }}</p>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <a href="../..{{ tl.project_file.get_file_url }}" target="_blank" rel="noreferrer noopener">{{ tl.project_file.get_file_name }}</a>
-                                    </div>
+                            <div class="flex-grow-1">
+                                <div>
+                                    <h5>{{ tl.user }} {{ tl.created_at }}</h5>
+                                    <p class="text-muted">{{ tl.notes|linebreaksbr }}</p>
+                                    <p class="text-muted"><a href="../..{{ tl.project_file.get_file_url }}" target="_blank" rel="noreferrer noopener">{{ tl.project_file.get_file_name }}</a></p>
                                 </div>
-                                {% else %} 
-                                <div class="col-lg-12">
-                                    <p>{{ tl.notes }}</p>
-                                </div>
-                                {% endif %}
                             </div>
                         </div>
-                    </div>
+                    </li>
                 {% endfor %}
+                </ul> 
             </div>
         </div>
     </div>
@@ -180,5 +302,10 @@
         {% endfor %}
 {% endif %}
 <script src="{% static 'libs/dropzone/dist/min/dropzone.min.js' %}"></script>
-        
+<script>
+    function showhide(idx){
+        var e = document.getElementById(idx);
+        e.style.display = ((e.style.display!='none') ? 'none' : 'block');
+    }
+</script>     
 {% endblock %}

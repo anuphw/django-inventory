@@ -57,28 +57,17 @@
             {% if message %} 
                 <span style="color:red">{{ message }}</span>
             {% endif %}
-            {% if products %}
             <form method="post">
                 {% csrf_token %}
-                <input type="hidden" id="project_id" name="project" value="{{ project.id }}">
+                <input type="hidden" id="challan_id" name="challan" value="{{ challan.id }}">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="date" class="form-label">Date: </label>
-                        <input type="date" name="date" id="date" value="{% now 'DATE_FORMAT' %}" class="form-control" required>
+                        <input type="date" name="date" id="date" value="{{ date }}" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label for="challan_no" class="form-label">Challan No: </label>
-                        <input type="text" name="challan_no" id="challan_no" class="form-control" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="address" class="form-label">Address:</label>
-                        <input type="text" name="address" id="address" class="form-control" value="{{ project.delivery_address }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="vehicle_no" class="form-label">Vehicle No:</label>
-                        <input type="text" name="vehicle_no" id="vehicle_no" class="form-control" value="">
+                        <input type="text" name="challan_no" id="challan_no" class="form-control" value="{{ challan.challanNo }}" readonly>
                     </div>
                 </div>
                 <div class="row">
@@ -91,7 +80,10 @@
                                         Product
                                     </th>
                                     <th>
-                                        Send Quantity
+                                        Quantity Returned
+                                    </th>
+                                    <th>
+                                        Reason
                                     </th>
                                 </tr>
                                 {% for p,q in products.items %} 
@@ -102,7 +94,10 @@
                                         <p id="p_product_{{ p }}" style="display: none">{{ q.0.description }}</p>
                                     </td>
                                     <td>
-                                        <input type="number" name="      {{ p }}" class="col-xs-2" id="send_quantity_{{ p }}" min="0" max="{{ q.1 }}" step="0.01" value="{{ q.1 }}" class="form-control">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
+                                        <input type="number" name="return_quantity_{{ p }}" class="col-xs-2" id="return_quantity_{{ p }}" min="0" max="{{ q.1 }}" step="0.01" value="0" class="form-control">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
+                                    </td>
+                                    <td>
+                                        <textarea name="notes_{{ p }}" id="notes_{{ p }}" cols="20" rows="3" class="form-control"></textarea>
                                     </td>
                                 </tr>
                                 {% endfor %} 
@@ -110,11 +105,9 @@
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Create</button>
+                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Return</button>
             </form>
-                {% else %} 
-                <h6>All products in the project are delivered.</h6>
-                {% endif %}
+                
                 
                 
         </div>

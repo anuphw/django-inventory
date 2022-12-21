@@ -96,6 +96,14 @@ class Project(models.Model):
     def get_raw_return_url(self):
         return reverse('projects:project_return', kwargs={'pk':self.pk})
     
+    @property
+    def create_challan_url(self):
+        return reverse('projects:delivery_challan_create',kwargs={'pk':self.pk})
+
+    @property
+    def create_inward_challan_url(self):
+        return reverse('projects:inward_material_create',kwargs={'pk':self.pk})
+    
 
 class Product(models.Model):
     name = models.CharField(max_length=30)
@@ -112,12 +120,9 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class ProductReturn(models.Model):
-    date = models.DateField()
-    project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
-    product = models.ForeignKey(Product,on_delete=models.DO_NOTHING)
-    quantity = models.DecimalField(max_digits=10,decimal_places=2)
-    description = models.TextField()
+
+
+
 
 class DeliveryChallan(models.Model):
     project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
@@ -135,6 +140,20 @@ class DeliveryChallan(models.Model):
         self.deleted_at = timezone.now()
         self.save()
 
+    @property
+    def get_absolute_url(self):
+        return reverse('projects:delivery_challan_update',kwargs={'pk':self.project.pk,'dc_id':self.pk})
+    
+    @property
+    def get_delete_url(self):
+        return reverse('projects:delivery_challan_delete',kwargs={'pk':self.project.pk,'dc_id':self.pk})
+
+    @property
+    def get_return_url(self):
+        return reverse('projects:delivery_return_create',kwargs={'pk':self.project.pk,'dc_id':self.pk})
+
+
+
 class DeliveryProduct(models.Model):
     deliveryChallan = models.ForeignKey(DeliveryChallan,on_delete=models.DO_NOTHING)
     product = models.ForeignKey(Product,on_delete=models.DO_NOTHING)
@@ -148,7 +167,33 @@ class DeliveryProduct(models.Model):
         self.deleted_at = timezone.now()
         self.save()
 
+class Returns(models.Model):
+    project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
+    date = models.DateField()
+    challan = models.ForeignKey(DeliveryChallan,on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager() 
 
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
+
+class ProductReturn(models.Model):
+    return_id = models.ForeignKey(Returns,on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product,on_delete=models.DO_NOTHING)
+    notes = models.TextField()
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = FirstManager() 
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 class ProjectFiles(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
     file = models.FileField(upload_to='documents/',validators=[file_size])
@@ -215,5 +260,44 @@ class ProjectTimeline(models.Model):
     def __str__(self):
         return self.notes
 
+# Inward material
+class IMChallan(models.Model):
+    challanNo = models.CharField(max_length=30)
+    project = models.ForeignKey(Project,on_delete=models.DO_NOTHING)
+    date = models.DateField()
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = ProjectTimelineManager() 
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
+    
+    @property
+    def get_absolute_url(self):
+        return reverse('projects:inward_material_update',kwargs={'pk':self.project.pk,'imc': self.pk})
+    @property
+    def get_update_url(self):
+        return reverse('projects:inward_material_update',kwargs={'pk':self.project.pk,'imc': self.pk})
+    @property
+    def get_delete_url(self):
+        return reverse('projects:inward_material_delete',kwargs={'pk':self.project.pk,'imc': self.pk})
+
+
+
+class IMQty(models.Model):
+    imchallan = models.ForeignKey(IMChallan,on_delete=models.DO_NOTHING)
+    imaterial = models.CharField(max_length=30)
+    quantity = models.DecimalField(max_digits=10,decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, default=None)
+    objects = ProjectTimelineManager() 
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
 
 

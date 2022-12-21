@@ -7,6 +7,7 @@ from .forms import ProjectForm, FileUploadForm, ProductFormSet
 from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 from materials.models import Warehouse, Material, Inventory, MaterialReturn
+from datetime import datetime
 
 
 def isnum(x):
@@ -101,6 +102,22 @@ class ProjectDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        project = self.get_object()
+        products = {}
+        for product in project.product_set.all():
+            products[f'{product.id}'] = [product,product.quantity,0,0,product.quantity] # product, quantity, delivered, returned, remaining 
+        for dc in project.deliverychallan_set.all():
+            for dp in dc.deliveryproduct_set.all():
+                if f'{dp.product.id}' in products.keys():
+                    products[f'{dp.product.id}'][2] += dp.quantity
+                    products[f'{dp.product.id}'][4] -= dp.quantity
+        for ret in project.returns_set.all():
+            for pr in ret.productreturn_set.all():
+                if f'{pr.product.id}' in products.keys():
+                    products[f'{pr.product.id}'][3] += pr.quantity
+                    products[f'{pr.product.id}'][4] += pr.quantity
+        print(products)
+        context['products'] = products
         context['fileForm'] = FileUploadForm()
         materials = {}
         for purchase in self.object.purchase_set.all():
@@ -120,6 +137,8 @@ class ProjectDetailView(DetailView):
 
         context['materials'] = materials
         return context
+
+
 
 
 
@@ -385,7 +404,6 @@ class MaterialReturnView(View):
                     returns.append([m,q,w])
                     warehouse = Warehouse.objects.filter(pk=w).first()
                     inventory, created = Inventory.objects.get_or_create(material=m,warehouse=warehouse)
-                    print('Inventory: ', inventory, created)
                     notes += f'{m.name} qty: {q} --> {warehouse}, '
                     mr = MaterialReturn(
                         date=dt,
@@ -401,10 +419,146 @@ class MaterialReturnView(View):
         pt = ProjectTimeline(project=project,status=project.status,notes = notes,user = user).save()
         return HttpResponseRedirect(project.get_absolute_url)
     
+class DeliveryChallanUpdateView(View):
+    def get(self,request,pk,dc_id,message=""):
+        project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        challan = DeliveryChallan.objects.filter(pk=self.kwargs['dc_id']).first()
+        print(challan.date,type(challan.date))
+        products = {}
+        for product in project.product_set.all():
+            products[f'{product.id}'] = [product,product.quantity,0]
+        
+        for dc in project.deliverychallan_set.all():
+            if dc.id != challan.id:
+                for dp in dc.deliveryproduct_set.all():
+                    if f'{dp.product.id}' in products:
+                        products[f'{dp.product.id}'][1] -= dp.quantity
+            else:
+                for dp in dc.deliveryproduct_set.all():
+                    if f'{dp.product.id}' in products:
+                        products[f'{dp.product.id}'][2] = dp.quantity
+        
+        for p in products.keys():
+            if products[p][1] == 0:
+                products.pop(p)
+        
+        
+        context = {
+            'products': products,
+            'project': project,
+            'challan': challan,
+            'message': message,
+            'date': challan.date.strftime("%Y-%m-%d")
+        }
+        return render(request,'projects/delivery_challan_update_simple.html',context=context)
+        
+    def post(self,request,pk,dc_id):
+        p = request.POST
+        project = Project.objects.filter(pk=pk).first()
+        dc = DeliveryChallan.objects.filter(pk=dc_id).first()
+        sending = False
+        print(p)
+        for k in p.keys():
+            if 'send_quantity_' in k:
+                if float(p[k]) > 0:
+                    sending = True
+        if not sending:
+            print('Not sending')
+            return self.get(request,pk,'Choose at least one product to send')
+        dc.date = p['date']
+        dc.challanNo = p['challan_no']
+        dc.address = p['address']
+        dc.vehicleNo = p['vehicle_no']
+        dc.user = request.user
+        dc.save()
+        products = []
+        for k in p.keys():
+            if 'product_' in k:
+                products.append(k[8:])
+                product = Product.objects.filter(pk=k[8:]).first()
+                qty = float(p['send_quantity_'+k[8:]])
+                pr, _ = DeliveryProduct.objects.get_or_create(
+                    deliveryChallan = dc,
+                    product = product,
+                    
+                )
+                print(pr)
+                pr.quantity = qty
+                pr.save()
+        
+        return HttpResponseRedirect(project.get_absolute_url)
+
+
+class DeliveryReturnCreateView(View):
+    def get(self,request,pk,dc_id,message=""):
+        project = Project.objects.filter(pk=pk).first()
+        challan = DeliveryChallan.objects.get(pk=dc_id)
+        products = {}
+        for p in challan.deliveryproduct_set.all():
+            products[f"{p.product.id}"] = [p.product, p.quantity]
+        for dr in challan.returns_set.all():
+            for p in dr.productreturn_set.all():
+                if f"{p.product.id}" in products:
+                    products[f"{p.product.id}"][1] -= p.quantity
+            
+        context = {
+            'project': project,
+            'challan': challan,
+            'products': products,
+            'message': message,
+            'date': datetime.now().strftime("%Y-%m-%d")
+        }
+        return render(request,'projects/productreturn_simple_create.html',context)
+    def post(self,request,pk,dc_id):
+        project = Project.objects.filter(pk=pk).first()
+        challan = DeliveryChallan.objects.get(pk=dc_id)
+        p = request.POST
+        print(p)
+        returning = False
+        returns = []
+        for k in p.keys():
+            if 'return_quantity_' in k:
+                if float(p[k]) > 0:
+                    returns.append([k[16:],p[k]])
+                    returning = True
+        if not returning:
+            return self.get(request,pk,dc_id,'Choose at least one product to return')
+        products = {}
+        for pr in challan.deliveryproduct_set.all():
+            products[f"{pr.product.id}"] = [pr.product, pr.quantity]
+        for dr in challan.returns_set.all():
+            for pr in dr.productreturn_set.all():
+                if f"{pr.product.id}" in products:
+                    products[f"{pr.product.id}"][1] -= pr.quantity
+        pr = Returns(
+            project = project,
+            date = p['date'],
+            challan = challan,
+            user = request.user
+        )
+        pr.save()
+        for pk, qty in returns:
+            ProductReturn(
+                return_id = pr,
+                product = products[pk][0],
+                notes = p[f"notes_{pk}"],
+                quantity = min(float(qty),float(products[pk][1]))
+            ).save()
+        return HttpResponseRedirect(project.get_absolute_url)
+
+
+class DeliveryChallanDeleteView(DeleteView):
+    model = DeliveryChallan
+
+    def get_success_url(self):
+        return self.request.META.get('HTTP_REFERER')
+    
+    def get(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)        
 
 
 class DeliveryChallanCreateView(View):
-    def get(self,request,pk):
+    def get(self,request,pk,message=""):
         project = Project.objects.filter(pk=self.kwargs['pk']).first()
         products = {}
         for product in project.product_set.all():
@@ -424,19 +578,29 @@ class DeliveryChallanCreateView(View):
         context = {
             'products': products,
             'project': project,
+            'message': message
         }
         return render(request,'projects/delivery_challan_simple.html',context=context)
     def post(self,request,pk):
         p = request.POST
         project = Project.objects.filter(pk=self.kwargs['pk']).first()
+        sending = False
+        for k in p.keys():
+            if 'send_quantity_' in k:
+                if p[k] > 0:
+                    sending = True
+        if not sending:
+            return self.get(request,pk,'Choose at least one product to send')
         dt = p['date']
         cn = p['challan_no']
         address = p['address']
+        vehicle_no = p['vehicle_no']
         user = request.user
         dc = DeliveryChallan(
             project = project,
             date = dt,
             challanNo = cn,
+            vehicleNo = vehicle_no,
             address = address,
             user = user
         )
@@ -453,7 +617,99 @@ class DeliveryChallanCreateView(View):
                     quantity = qty
                 ).save()
         
-        return self.get(request,pk)
+        return HttpResponseRedirect(project.get_absolute_url)
+
+
+class InwardMaterialCreateView(View):
+    def get(self,request,pk,message=""):
+        project = Project.objects.get(pk=pk)
+        context = {
+            'project': project,
+            'date': datetime.now().strftime("%Y-%m-%d")
+        }
+        return render(request,'projects/inward_simple_create.html',context)
+    def post(self,request,pk):
+        p = request.POST
+        print(p)
+        getting = False
+        for k in p.keys():
+            if 'imaterial_qty_' in k:
+                if float(p[k]) > 0:
+                    getting = True
+        if not getting:
+            return self.get(request,pk,"Add at least one inward material")
+        project = Project.objects.get(pk=pk)
+        dt = p['date']
+        challan = p['challan']
+        imchallan = IMChallan(
+            date = dt,
+            challanNo = challan,
+            user = request.user,
+            project = project
+        )
+        imchallan.save()
+        for k in p.keys():
+            if 'imaterial_qty_' in k:
+                imaterial = p['imaterial_'+k[14:]]
+                quantity = p[k]
+                IMQty(
+                    imaterial = imaterial,
+                    quantity = quantity,
+                    imchallan = imchallan
+                ).save()
+        return HttpResponseRedirect(project.get_absolute_url)
+
+
+class InwardMaterialUpdateView(View):
+    def get(self,request,pk,imc,message=""):
+        project = Project.objects.get(pk=pk)
+        imchallan = IMChallan.objects.get(pk=imc)
+        context = {
+            'project': project,
+            'imchallan': imchallan,
+            'date': imchallan.date.strftime("%Y-%m-%d")
+        }
+        return render(request,'projects/inward_simple_update.html',context)
+    def post(self,request,pk,imc):
+        p = request.POST
+        getting = False
+        for k in p.keys():
+            if 'imaterial_qty_' in k:
+                if float(p[k]) > 0:
+                    getting = True
+        if not getting:
+            return self.get(request,pk,"Add at least one inward material")
+        project = Project.objects.get(pk=pk)
+        imchallan = IMChallan.objects.get(pk=imc)
+        dt = p['date']
+        challan = p['challan']
+        imchallan.date = dt
+        imchallan.challanNo = challan
+        imchallan.save()
+        for k in p.keys():
+            if 'imaterial_qty_' in k:
+                try:
+                    imaterial = IMQty.objects.filter(pk=k[14:]).first()
+                except:
+                    imaterial = IMQty(
+                        imaterial = '',
+                        quantity = 0,
+                        imchallan = imchallan
+                    )
+                imaterial.imaterial = p['imaterial_'+k[14:]]
+                imaterial.quantity = p[k]
+                imaterial.save()
+        return HttpResponseRedirect(project.get_absolute_url)
+
+class InwardMaterialDeleteView(View):
+    def get(self,request,pk,imc):
+        project = Project.objects.get(pk=pk)
+        imchallan = IMChallan.objects.get(pk=imc)
+        for imaterial in imchallan.imqty_set.all():
+            imaterial.delete()
+        imchallan.delete()
+        return HttpResponseRedirect(project.get_absolute_url)
+
 
 def changeStatus(self,request):
     project = request.POST['project_id']
