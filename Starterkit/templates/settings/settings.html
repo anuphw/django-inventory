@@ -1,0 +1,53 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Settings{% endblock %}
+{% block contents %}
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h4>Update Settings</h4>
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %} 
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" name="company_name" class="form-control" id="company_name" required value="{{ settings.company_name }}">    
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" value="{{ settings.email}}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone No</label>
+                            <input type="tel" name="phone_number" class="form-control" id="phone_number" value="{{ settings.phone_number }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" name="address" class="form-control" id="address" value="{{ settings.address }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="logo" class="form-label">Logo</label>
+                            <input type="file" name="logo" class="form-control" id="logo">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

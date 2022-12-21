@@ -210,6 +210,7 @@ class MaterialUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
+        print(context)
         context['update'] = True
         context['form_name'] = 'Update Material'
         return context

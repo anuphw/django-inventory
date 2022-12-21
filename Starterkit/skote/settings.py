@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'projects',
     'materials',
     'expenses',
+    'settings',
     # Third Party App
     'crispy_forms',
     'django.contrib.sites',
@@ -101,6 +102,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'settings.context_processors.appsetting',
             ],
         },
     },

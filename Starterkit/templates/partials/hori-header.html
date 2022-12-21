@@ -4,24 +4,27 @@
                 <div class="navbar-header">
                     <div class="d-flex">
                         <!-- LOGO -->
-                        <div class="navbar-brand-box">
+                        <div class="navbar-brand">
                             <a href="{% url 'dashboard' %}" class="logo logo-dark">
                                 <span class="logo-sm">
-                                    <img src="{% static 'images/logo.svg' %}" alt="" height="22">
+                                    <img src="{{ app_settings.logo.url }}" alt="" height="22">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{% static 'images/logo-dark.png' %}" alt="" height="17">
+                                    <img src="{{ app_settings.logo.url }}" alt="" height="17">
                                 </span>
+                                {{ app_settings.company_name }}
                             </a>
 
                             <a href="{% url 'dashboard' %}" class="logo logo-light">
                                 <span class="logo-sm">
-                                    <img src="{% static 'images/logo-light.svg' %}" alt="" height="22">
+                                    <img src="{{ app_settings.logo.url }}" alt="" height="22">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{% static 'images/logo-light.png' %}" alt="" height="19">
+                                    <img src="{{ app_settings.logo.url }}" alt="" height="19">
                                 </span>
+                                {{ app_settings.company_name }}
                             </a>
+                            
                         </div>
 
                         <button type="button" class="btn btn-sm px-3 font-size-16 d-lg-none header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
@@ -184,7 +187,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" placeholder="Search ..." aria-label="Search input">
                                 
-                                            <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>s
+                                            <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
                                         </div>
                                     </div>
                                 </form>
@@ -380,6 +383,9 @@
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
                                 <a class="dropdown-item" href="{% url 'authlockscreen' %}"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Lock Screen</span></a>
+                                {% if user.username == 'admin' %}
+                                <a class="dropdown-item" href="{% url 'settings:settings' %}"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Settings</span></a>
+                                {% endif %}
                                 <div class="dropdown-divider"></div>
                                 {% if user.is_authenticated %}
 

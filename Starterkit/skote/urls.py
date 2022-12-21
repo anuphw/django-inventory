@@ -38,6 +38,7 @@ urlpatterns = [
     path('expenses/',include('expenses.urls', namespace='expenses')),
     path('projects/',include('projects.urls', namespace='projects')),
     path('materials/',include('materials.urls', namespace='materials')),
+    path('settings/',include('settings.urls', namespace='settings')),
     #Authencation
     # path('authentication/',include('authentication.urls')),
     #Pages
