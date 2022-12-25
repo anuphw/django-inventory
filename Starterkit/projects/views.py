@@ -8,6 +8,21 @@ from django.urls import reverse
 from django.views.decorators.clickjacking import xframe_options_exempt
 from materials.models import Warehouse, Material, Inventory, MaterialReturn
 from datetime import datetime
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from io import BytesIO
+from settings.models import AppSettings
+from django.conf import settings
+
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
+
 
 
 def isnum(x):
@@ -488,6 +503,18 @@ class DeliveryChallanUpdateView(View):
         
         return HttpResponseRedirect(project.get_absolute_url)
 
+class DeliveryChallanPDFView(View):
+    def get(self,request,pk,dc_id):
+        project = Project.objects.filter(pk=pk).first()
+        challan = DeliveryChallan.objects.get(pk=dc_id)
+        appsettings,_ = AppSettings.objects.get_or_create()
+        context = {
+            'challan': challan,
+            'app_settings': appsettings,
+        }
+        pdf = render_to_pdf('projects/pdf_template.html',context)
+        return HttpResponse(pdf, content_type='application/pdf')
+        # return render(request,'projects/pdf_template.html',context)
 
 class DeliveryReturnCreateView(View):
     def get(self,request,pk,dc_id,message=""):

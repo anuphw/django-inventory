@@ -145,6 +145,10 @@ class DeliveryChallan(models.Model):
         return reverse('projects:delivery_challan_update',kwargs={'pk':self.project.pk,'dc_id':self.pk})
     
     @property
+    def get_pdf_url(self):
+        return reverse('projects:delivery_challan_pdf',kwargs={'pk':self.project.pk,'dc_id':self.pk})
+    
+    @property
     def get_delete_url(self):
         return reverse('projects:delivery_challan_delete',kwargs={'pk':self.project.pk,'dc_id':self.pk})
 

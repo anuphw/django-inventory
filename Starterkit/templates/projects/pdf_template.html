@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <style>
+            @page {
+                size: a4 portrait;
+                @frame header_frame {           /* Static Frame */
+                    -pdf-frame-content: header_content;
+                    left: 50pt; width: 512pt; top: 50pt; height: 160pt;
+                }
+                @frame content_frame {          /* Content Frame */
+                    left: 50pt; width: 512pt; top: 170pt; height: 590pt;
+                }
+                @frame footer_frame {           /* Another static Frame */
+                    -pdf-frame-content: footer_content;
+                    left: 50pt; width: 512pt; top: 772pt; height: 30pt;
+                }
+            }
+        </style>
+        {% include 'partials/css.html' %}
+    </head>
+
+    <body>
+        <div id="header_content">
+            <img src="{{app_settings.logo.url}}" alt="LOGO" width="200" height="150">
+            <h2 align="center">{{app_settings.company_name}}</h2>
+            <p align="center">{{app_settings.address}} - {{app_settings.phone_number}}</p>
+            <p align="center">{{app_settings.email}} - {{app_settings.website}}</p>
+        </div>
+
+        
+        <div id="footer_content">(c) - page <pdf:pagenumber>
+            of <pdf:pagecount>
+        </div>
+
+        <!-- HTML Content -->
+
+        
+
+        <hr>
+        <div class="row">
+            <h6>Challan Information</h6>
+            <table>
+                <tr>
+                    <td>Date: {{ challan.date }}</td>    
+                    <td>Challan No: {{ challan.challanNo }}</td>
+                </tr>
+                <tr>
+                    <td>Prodject: {{ challan.project.title }}</td>    
+                    <td>Vehicle No: {{ challan.vehicleNo }}</td>
+                </tr>
+                <tr>
+                    <td>Address: {{ challan.address }}</td>    
+                </tr>
+            </table>
+        </div>
+        
+        
+
+        <hr>
+
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <h6>Products</h6>
+                    <table class="table">
+                        <tr>
+                            <th align="left">Product</th>
+                            <th align="left">Quantity</th>
+                        </tr>
+                        {% for product in challan.deliveryproduct_set.all %}
+                        <tr>
+                            <td>
+                                {{product.product.name}}    
+                            </td>
+                            <td>
+                                {{product.quantity}}    
+                            </td>
+                        </tr>
+                        {% endfor %} 
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+    </body>
+</html>

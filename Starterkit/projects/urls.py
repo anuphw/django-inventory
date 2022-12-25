@@ -23,6 +23,7 @@ urlpatterns = [
     path('status/new/',StatusCreateView.as_view(),name='status_create'),
     path('<int:pk>/delivery',DeliveryChallanCreateView.as_view(),name='delivery_challan_create'),
     path('<int:pk>/delivery/<int:dc_id>',DeliveryChallanUpdateView.as_view(),name='delivery_challan_update'),
+    path('<int:pk>/delivery/<int:dc_id>/pdf',DeliveryChallanPDFView.as_view(),name='delivery_challan_pdf'),
     path('<int:pk>/delivery/<int:dc_id>/delete',DeliveryChallanDeleteView.as_view(),name='delivery_challan_delete'),
     path('<int:pk>/delivery/<int:dc_id>/return',DeliveryReturnCreateView.as_view(),name='delivery_return_create'),
     path('<int:pk>/inward',InwardMaterialCreateView.as_view(),name='inward_material_create'),
