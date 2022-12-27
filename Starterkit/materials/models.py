@@ -190,6 +190,12 @@ class Inventory(models.Model):
     def delete_url(self):
         return reverse('materials:inventory_delete',kwargs={'pk': self.id})
 
+    @property
+    def bgcolor(self):
+        if self.quantity <= self.low_level:
+            return "#ffcc99"
+        else:
+            return "#adebad"
 
 
 class InventoryAdjustment(models.Model):
