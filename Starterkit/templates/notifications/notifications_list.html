@@ -1,0 +1,65 @@
+{% extends 'partials/base.html' %}
+{% block title %}Clients{% endblock %}
+{% load static %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-8">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <h2>Notifications</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <ul class="verti-timeline list-unstyled">
+                        {% for noti in notification_list %} 
+                        <li class="event-list" >
+                            <div class="d-flex">
+                                <div class="flex-grow-1">
+                                    
+                                    <div style="cursor:pointer;background:{{noti.bgcolor}};" onclick="UpdateStatus('{{noti.get_view_url}}',this);">
+                                        <h5>{{ noti.created_at }} - {{ noti.title|title }}</h5>
+                                        <p>{{ noti.text }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>           
+                        {% endfor %}
+                    </ul>                    
+
+                </div>
+            </div>
+        </div> <!-- end col -->
+    </div>
+
+{% endblock %}
+
+
+{% block extra_javascript %}
+    <script>
+        function UpdateStatus(url,element){
+    $.ajax({
+        
+            type:"GET",
+            url: url,
+            success:function(responsedata){
+                   element.style.background = "none";
+            }
+         })
+}
+    </script>
+{% endblock %}

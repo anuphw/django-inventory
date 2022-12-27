@@ -2,6 +2,8 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, View
 from django.views.generic.edit import FormView
 from .models import AppSettings
+from django.contrib.auth.models import User, Group
+from notifications.models import Notification, add_group_notification, add_user_notification
 from django.urls import reverse_lazy
 from datetime import datetime
 
@@ -21,6 +23,10 @@ class SettingsPage(View):
         settings.phone_number = p['phone_number']
         settings.address = p['address']
         settings.email = p['email']
+        text = 'something in settings changed'
+        admin = Group.objects.get(name='admin')
+        add_group_notification(admin,'Admin group notification', 'this is a group notification')
+
         if 'logo' in request.FILES:
             print(p)
             settings.logo = request.FILES['logo']

@@ -1,0 +1,39 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}{{ client.name|title }}{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'libs/toastr/build/toastr.min.css' %}">
+{% endblock %}
+{% block contents %}
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Notification</h4>
+                    {% if message %} 
+                    <p>{{message}}</p>
+                    {% endif %} 
+                    {% if notification %}
+                    <table class="table table-wrap mb-0">
+                        <tr>
+                            <td><b>Title</b></td>
+                            <td>{{ notification.title|title }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Details:</b></td>
+                            <td>{{ notification.text }}</td>
+                        </tr>
+                    </table>   
+                    {% endif %} 
+                </div>
+            </div>
+        </div>
+        
+        <!-- end col -->
+    </div>
+    <!-- end row -->
+
+    
+{% endblock %}

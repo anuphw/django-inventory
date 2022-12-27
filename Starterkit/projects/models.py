@@ -1,15 +1,13 @@
 from django.db import models
 import os
 # Create your models here.
-from django.db import models
+
 import datetime
 from django.contrib.auth.models import User
 from clients.models import Client, ClientContact, FirstManager
 from skote.get_username import get_username
 from django.urls import reverse
-from django_currentuser.middleware import (
-    get_current_user, get_current_authenticated_user)
-from django_currentuser.db.models import CurrentUserField
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone

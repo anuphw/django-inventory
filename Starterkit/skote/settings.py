@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'materials',
     'expenses',
     'settings',
+    'notifications',
     # Third Party App
     'crispy_forms',
     'django.contrib.sites',
@@ -103,6 +104,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'settings.context_processors.appsetting',
+                'notifications.context_processors.notifications',
             ],
         },
     },
