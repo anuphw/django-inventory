@@ -18,6 +18,17 @@ class Notification(models.Model):
     deleted_at = models.DateTimeField(null=True, default=None)
     objects = FirstManager() 
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'text', 'user', 'viewed_at'], name="%(app_label)s_%(class)s_unique")
+        ]
+
+    def save(self, *args, **kwargs):
+        try:
+            self.save(*args,**kwargs)
+        except:
+            pass
+
     def delete(self):
         self.deleted_at = timezone.now()
         self.save()
@@ -25,6 +36,7 @@ class Notification(models.Model):
     def viewed(self):
         self.viewed_at = timezone.now()
         self.save()
+
     @property
     def get_view_url(self):
         return reverse('notifications:view',kwargs={'pk':self.pk})

@@ -24,7 +24,7 @@
                         </tr>
                         <tr>
                             <td><b>Supplier</b></td>
-                            <td>{{ purchase.supplier }}</td>
+                            <td><a href="{{purcahse.supplier.get_absolute_url}}">{{ purchase.supplier }}</a></td>
                         </tr>
                         <tr>
                             <td><b>Warehouse</b></td>
@@ -32,7 +32,7 @@
                         </tr>
                         <tr>
                             <td><b>Project</b></td>
-                            <td>{{ purchase.project }}</td>
+                            <td><a href="{{purchase.project.get_absolute_url}}">{{ purchase.project }}</a></td>
                         </tr>
                     </table>    
                 </div>
@@ -48,18 +48,11 @@
                     <table class="table table-nowrap mb-0">
                         <tr>
                             <th>Material</th><th>Quantity</th>
-                        {% if purchase.warehouse %}
-                            <th>Low Level</th><th>Current Level</th>
-                        {% endif %}
                         </tr>
                         {% for materialqty in purchase.materialqty_set.all %}
                         <tr>
                             <td>{{ materialqty.material }}</td>
                             <td>{{ materialqty.quantity }}</td>
-                        {% if purchase.warehouse %}
-                            <td>{{ materialqty.material.get_low_level(purchase.warehouse.id) }}</td>
-                            <td>{{ materialqty.material.get_level(purchase.warehouse.id) }}</td>
-                        {% endif %}
                         </tr>
                         {% endfor %}
                     </table>

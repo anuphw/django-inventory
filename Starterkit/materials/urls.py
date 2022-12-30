@@ -37,16 +37,17 @@ urlpatterns = [
     path('warehouse/pop',WarehouseAddPopup.as_view(),name='warehouse_pop'),
     path('warehouse/<int:pk>/update/',WarehouseUpdateView.as_view(),name='warehouse_update'),
     path('warehouse/<int:pk>/delete/',WarehouseDeleteView.as_view(),name='warehouse_delete'),
+    path('warehouse/<int:pk>/transfer/',InventoryTransferView.as_view(),name='inventory_transfer'),
     path('warehouse/',WarehouseListView.as_view(),name='warehouse_list'),
 
     path('inventory/add/',InventoryCreateView.as_view(),name='inventory_create'),
     path('inventory/<int:pk>/update/',InventoryUpdateView.as_view(),name='inventory_update'),
-    path('inventory/<int:pk>/delete/',InventoryDeleteView.as_view(),name='inventory_delete'),
     path('inventory/',InventoryListView.as_view(),name='inventory_list'),
     path('inventory_adj/',InventoryAdjListView.as_view(),name='inventory_adj_list'),
 
     path('purchases/',PurchasesListView.as_view(),name='purchase_list'),
     path('purchases/add/',PurchaseSimpleView.as_view(),name='purchase_create'),
+    path('purchases/<int:pk>/',PurchaseDetailView.as_view(),name='purchase_detail'),
 
     path('transfer/',MaterialTransferCreateView.as_view(),name='transfer'),
     path('transfer_list/',TransferListView.as_view(),name='transfer_list'),

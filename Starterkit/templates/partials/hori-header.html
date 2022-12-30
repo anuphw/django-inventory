@@ -290,7 +290,7 @@
                             <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="bx bx-bell bx-tada"></i>
-                                <span class="badge bg-danger rounded-pill">{{ unread_count }}</span>
+                                <span class="badge bg-danger rounded-pill" id="unread_cnt">{{ unread_count }}</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
                                 aria-labelledby="page-header-notifications-dropdown">
@@ -376,6 +376,11 @@
             type:"GET",
             url: url,
             success:function(responsedata){
+                if (element.style.background !== "none"){
+                    var unread = parseInt($("#unread_cnt").text());
+                    console.log("unread count: ",unread);
+                    $("#unread_cnt").text(Math.max((unread-1),0));
+                }
                    element.style.background = "none";
             }
          })

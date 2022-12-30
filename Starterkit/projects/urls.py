@@ -29,4 +29,5 @@ urlpatterns = [
     path('<int:pk>/inward',InwardMaterialCreateView.as_view(),name='inward_material_create'),
     path('<int:pk>/inward/<int:imc>',InwardMaterialUpdateView.as_view(),name='inward_material_update'),
     path('<int:pk>/inward/<int:imc>/delete',InwardMaterialDeleteView.as_view(),name='inward_material_delete'),
+    path('changeStatus',changeStatus,name='changeStatus'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

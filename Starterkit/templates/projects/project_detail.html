@@ -267,20 +267,49 @@
         <div class="card">
             <div class="card-body">
                 <h4>Timeline</h4>
+            </div>
+            <div class="card-footer bg-transparent border-top border-bottom">
+                <div class="contact-links d-flex font-size-20">
+                    <div class="flex-fill">
+                        <a href="javascript: $('.verti-timeline li').show();"><i class="mdi mdi-filter-off"></i>   All</a>
+                    </div>
+                    <div class="flex-fill">
+                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._project').hide();"><i class="mdi mdi-file-document-edit"></i>Project</a>
+                    </div>
+                    <div class="flex-fill">
+                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._material').hide();"><i class="mdi mdi-truck"></i>Material</a>
+                    </div>
+                    <div class="flex-fill">
+                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._product').hide();"><i class="mdi mdi-truck-check-outline"></i>Product</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                
                 <ul class="verti-timeline list-unstyled">
                     {% for tl in project.projecttimeline_set.all %} 
-                    <li class="event-list">
+                    <li class="event-list _{{ tl.type|lower}}">
                         <div class="event-timeline-dot">
                             <i class="bx bx-right-arrow-circle"></i>
                         </div>
                         <div class="d-flex">
                             <div class="flex-shrink-0 me-3">
-                                <i class="bx bx-copy-alt h2 text-primary"></i>
+                            {% if tl.type == 'project' %} 
+                            <i class="mdi mdi-file-document-edit"></i>
+                            {% elif tl.type == 'material' %} 
+                            <i class="mdi mdi-truck"></i>
+                            {% elif tl.type == 'product' %} 
+                            <i class="mdi mdi-truck-check-outline"></i>
+                            {% else %} 
+                            <i class="mdi mdi-file-document-edit"></i>
+                            {% endif %}
+                                
                             </div>
                             <div class="flex-grow-1">
                                 <div>
                                     <h5>{{ tl.user }} {{ tl.created_at }}</h5>
-                                    <p class="text-muted">{{ tl.notes|linebreaksbr }}</p>
+                                    <p class="text-muted">{{ tl.notes|safe }}</p>
                                     <p class="text-muted"><a href="../..{{ tl.project_file.get_file_url }}" target="_blank" rel="noreferrer noopener">{{ tl.project_file.get_file_name }}</a></p>
                                 </div>
                             </div>
@@ -313,6 +342,11 @@
     function showhide(idx){
         var e = document.getElementById(idx);
         e.style.display = ((e.style.display!='none') ? 'none' : 'block');
+    }
+    function show(e){
+        if (e == '_all'){
+            
+        }
     }
 </script>     
 {% endblock %}

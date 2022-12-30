@@ -131,7 +131,6 @@ class ProjectDetailView(DetailView):
                 if f'{pr.product.id}' in products.keys():
                     products[f'{pr.product.id}'][3] += pr.quantity
                     products[f'{pr.product.id}'][4] += pr.quantity
-        print(products)
         context['products'] = products
         context['fileForm'] = FileUploadForm()
         materials = {}
@@ -235,6 +234,7 @@ class ProjectSimpleUpdateView(View):
         ProjectTimeline(
             project = project,
             notes = notes,
+            type = 'project',
             status = project.status,
             user = user
         ).save()
@@ -283,7 +283,7 @@ class ProjectUpdateView(UpdateView):
         # if there are updated then log the timeline
         if len(notes) > 0:
             notes = f"Updates: " + notes
-            ProjectTimeline(project=object,status=self.get_object().status,notes = notes,user = user).save()
+            ProjectTimeline(project=object,status=self.get_object().status,type='project',notes = notes,user = user).save()
         return super().form_valid(form)
 
 class ProjectPopView(CreateView):
@@ -321,7 +321,7 @@ class ProjectCreateView(CreateView):
             else:
                 notes += f" {f.name} = {f.data}."
         print(notes)
-        self.update = ProjectTimeline(project=self.object,status=status,notes = notes,user = user).save()
+        self.update = ProjectTimeline(project=self.object,status=status,type='project',notes = notes,user = user).save()
         return super().form_valid(form)
 
 
@@ -348,7 +348,7 @@ class ProjectFileDeleteView(DeleteView):
         object = self.get_object()
         self.project = object.project
         notes = "Deleted file " + object.get_file_name()
-        ProjectTimeline(project=self.project,status=self.project.status,notes = notes,user = user).save()
+        ProjectTimeline(project=self.project,status=self.project.status,type='file',notes = notes,user = user).save()
         return self.delete(request, *args, **kwargs)
 
 
@@ -430,8 +430,7 @@ class MaterialReturnView(View):
                     mr.save()
                     inventory.quantity += q
                     inventory.save()
-        print(returns)
-        pt = ProjectTimeline(project=project,status=project.status,notes = notes,user = user).save()
+        ProjectTimeline(project=project,status=project.status,type='material',notes = notes,user = user).save()
         return HttpResponseRedirect(project.get_absolute_url)
     
 class DeliveryChallanUpdateView(View):
@@ -500,7 +499,13 @@ class DeliveryChallanUpdateView(View):
                 print(pr)
                 pr.quantity = qty
                 pr.save()
-        
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'product',
+                user = request.user,
+                notes = f"Delivery <a href='{dc.get_absolute_url}'>challan</a> updated"
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
 class DeliveryChallanPDFView(View):
@@ -571,6 +576,13 @@ class DeliveryReturnCreateView(View):
                 notes = p[f"notes_{pk}"],
                 quantity = min(float(qty),float(products[pk][1]))
             ).save()
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'product',
+                user = request.user,
+                notes = f"Products returned from <a href='{challan.get_absolute_url}'>challan</a>."
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
 
@@ -581,6 +593,13 @@ class DeliveryChallanDeleteView(DeleteView):
         return self.request.META.get('HTTP_REFERER')
     
     def get(self, request, *args, **kwargs):
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'product',
+                user = request.user,
+                notes = f"Deleted delivery challan {self.get_object().challanNo}."
+            ).save()
         return self.delete(request, *args, **kwargs)        
 
 
@@ -643,7 +662,13 @@ class DeliveryChallanCreateView(View):
                     product = product,
                     quantity = qty
                 ).save()
-        
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'product',
+                user = request.user,
+                notes = f"Created delivery <a href='{dc.get_absolute_url}'>challan</a>."
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
 
@@ -684,6 +709,13 @@ class InwardMaterialCreateView(View):
                     quantity = quantity,
                     imchallan = imchallan
                 ).save()
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'material',
+                user = request.user,
+                notes = f"Inward material: <a href='{imchallan.get_absolute_url}'>Challan: {challan}</a>."
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
 
@@ -726,6 +758,13 @@ class InwardMaterialUpdateView(View):
                 imaterial.imaterial = p['imaterial_'+k[14:]]
                 imaterial.quantity = p[k]
                 imaterial.save()
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'material',
+                user = request.user,
+                notes = f"Updated Inward material: <a href='{imchallan.get_absolute_url}'>Challan: {challan}</a>."
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
 class InwardMaterialDeleteView(View):
@@ -735,11 +774,32 @@ class InwardMaterialDeleteView(View):
         for imaterial in imchallan.imqty_set.all():
             imaterial.delete()
         imchallan.delete()
+        ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'material',
+                user = request.user,
+                notes = f"Deleted Inward material Challan: {imchallan.challan}."
+            ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
-
-def changeStatus(self,request):
-    project = request.POST['project_id']
-    status = request.POST['status']
-
+@xframe_options_exempt
+def changeStatus(request):
+    project = Project.objects.get(pk=request.POST['project_id'])
+    status = Status.objects.get(pk=request.POST['status'][7:])
+    sibling_id = int(request.POST['sibling'])
+    new_rank = None
+    if sibling_id > 0:
+        new_rank = Project.objects.get(pk=sibling_id).status_rank
+    print(project,status,sibling_id,new_rank)
+    
+    ProjectTimeline(
+        project = project,
+        status = project.status,
+        type = 'project',
+        user = request.user,
+        notes = f"Changed status from {project.status.status} to {status.status}"
+    ).save()
+    project.change_status(status,request.user)
+    project.change_status_rank(new_rank)
     return ''

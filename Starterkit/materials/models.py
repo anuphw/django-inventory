@@ -1,13 +1,14 @@
 from django.db import models
 from django.db.models import Q
 from projects.models import file_size
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from projects.models import *
 from clients.models import *
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from notifications.models import Notification, add_group_notification
 # Create your models here.
 
 
@@ -181,7 +182,23 @@ class Inventory(models.Model):
     def __str__(self):
         return f'{self.material.name}-{self.warehouse.name}'
      
-    
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super(Inventory,self).save(*args,**kwargs)
+        if not is_new:
+            title = text = ""
+            if self.quantity == 0:
+                title = "No inventory alert"
+                text = f"Ran out of {self.material.name} at {self.warehouse.name} warehouse."
+            elif self.quantity <= self.low_level:
+                title = "Low inventory alert"
+                text = f"Running out of {self.material.name} at {self.warehouse.name} warehouse. It has alread crossed the danger level of {self.low_level} and only {self.quantity} items are remaining."
+            if title != "":
+                for gname in ['admin']:
+                    g = Group.objects.get(name=gname)
+                    print(title,text,g)
+                    add_group_notification(g,title,text)
+
     @property
     def update_url(self):
         return reverse('materials:inventory_update',kwargs={'pk': self.id})
@@ -192,7 +209,9 @@ class Inventory(models.Model):
 
     @property
     def bgcolor(self):
-        if self.quantity <= self.low_level:
+        if self.quantity == 0:
+            return "#ff0000"
+        elif self.quantity <= self.low_level:
             return "#ffcc99"
         else:
             return "#adebad"
@@ -202,6 +221,7 @@ class InventoryAdjustment(models.Model):
     inventory = models.ForeignKey(Inventory,on_delete=models.CASCADE)
     adjustment_amount = models.DecimalField(max_digits=10,decimal_places=2)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    notes = models.CharField(max_length=30,default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)
@@ -235,6 +255,13 @@ class Purchase(models.Model):
         self.deleted_at = timezone.now()
         self.save()  
     
+    @property
+    def get_absolute_url(self):
+        return reverse('materials:purchase_detail',kwargs={'pk':self.pk})
+    
+    @property
+    def get_update_url(self):
+        return reverse('materials:purchase_update',kwargs={pk:self.pk})
 
 class MaterialQty(models.Model):
     material = models.ForeignKey(Material,on_delete=models.CASCADE)
@@ -248,7 +275,22 @@ class MaterialQty(models.Model):
         self.deleted_at = timezone.now()
         self.save()
 
-
+    def save(self,*args,**kwargs):
+        super(MaterialQty,self).save(*args,**kwargs)
+        if self.purchase.warehouse:
+            inventory = Inventory.objects.get_or_create(
+                material = self.material,
+                warehouse = self.purchase.warehouse
+            )[0]
+            inventory.quantity += float(self.quantity)
+            inventory.save()
+            InventoryAdjustment(
+                inventory = inventory,
+                adjustment_amount = self.quantity,
+                user = self.purchase.user,
+                notes = f"Purchased {self.quantity} on {self.purchase.date}"
+            ).save()
+        
 
 # Models on transfers
 class MaterialTransfer(models.Model):
@@ -271,6 +313,10 @@ class MaterialTransfer(models.Model):
     @property
     def delete_url(self):
         return reverse('materials:transfer_delete', kwargs={'pk': self.id})
+    
+    @property
+    def get_list_url(self):
+        return reverse('materials:transfer_list')
     
     
 

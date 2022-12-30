@@ -19,6 +19,11 @@
 {% endblock %}
 {% block contents %}
 <div class="row">
+    
+            
+        
+</div>
+<div class="row">
     <div class="card">
         <div class="card-body">
             <div class="row">
@@ -32,55 +37,53 @@
             
         </div>
     </div>
-            
-        
-</div>
-<div class="hori-row">
-    {% for status in statuses %}
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title mb-4">{{ status }}</h4>
-                <div id="{{ status|slugify }}-task" class="pb-1 task-list">
-                    {% for project in status.project_set.all %}
-                    <div class="card task-box" id="task-{{ project.id }}">
-                        <div class="card-body">
-                            <div class="dropdown float-end">
-                                <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item edittask-details" href="{% url 'projects:project_update' pk=project.id %}" id="taskedit" >Edit</a>
-                                    <a class="dropdown-item deletetask" href="{% url 'projects:project_delete' pk=project.id %}">Delete</a>
+
+    <div class="hori-row">
+        {% for status in statuses %}
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">{{ status }}</h4>
+                    <div id="status-{{ status.pk }}" class="pb-1 task-list">
+                        {% for project in status.project_set.all|dictsort:"status_rank" %}
+                        <div class="card task-box" id="{{ project.id }}">
+                            <div class="card-body">
+                                <div class="dropdown float-end">
+                                    <a href="#" class="dropdown-toggle arrow-none" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-dots-vertical m-0 text-muted h5"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item edittask-details" href="{% url 'projects:project_update' pk=project.id %}" id="taskedit" >Edit</a>
+                                        <a class="dropdown-item deletetask" href="{% url 'projects:project_delete' pk=project.id %}">Delete</a>
+                                    </div>
+                                </div> <!-- end dropdown -->
+                                
+                                <div>
+                                    <h5 class="font-size-15"><a href="javascript: void(0);" class="text-dark" id="task-name"><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h5>
+                                    <p class="text-muted mb-4">{{ project.client.name }}</p>
                                 </div>
-                            </div> <!-- end dropdown -->
-                            
-                            <div>
-                                <h5 class="font-size-15"><a href="javascript: void(0);" class="text-dark" id="task-name"><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h5>
-                                <p class="text-muted mb-4">{{ project.client.name }}</p>
+                                
+
+                                <!-- <div class="text-end">
+                                    <h5 class="font-size-15 mb-1" id="task-budget">$ 145</h5>
+                                    <p class="mb-0 text-muted">Budget</p>
+                                </div> -->
                             </div>
                             
-
-                            <!-- <div class="text-end">
-                                <h5 class="font-size-15 mb-1" id="task-budget">$ 145</h5>
-                                <p class="mb-0 text-muted">Budget</p>
-                            </div> -->
                         </div>
+                        <!-- end task card -->
+                        {% endfor %}
                         
                     </div>
-                    <!-- end task card -->
-                    {% endfor %}
                     
+                    <!-- end first column inside -->
                 </div>
-                
-                <!-- end first column inside -->
             </div>
         </div>
+        
+        {% endfor %} 
+
     </div>
-    
-    {% endfor %} 
-
-
 </div>
 {% endblock %}
 
@@ -93,13 +96,29 @@
     <script src="{% static 'libs/jquery-validation/dist/jquery.validate.min.js' %}"></script>
 
     <script>
-        var status_list = []
+        var status_list = [];
         {% for status in statuses %}
-            status_list.push(document.getElementById('{{ status|slugify }}-task'))
+            status_list.push(document.getElementById('status-{{status.pk}}'));
         {% endfor %}
         dragula(status_list,{
             removeOnSpill: false,
             revertOnSpill: true
+        }).on('drop',function(el,target,source,sibling){
+            sibling_id = (sibling == null) ? -1 : sibling.id;
+            
+            $.ajax({
+                type: 'POST',    
+                url: "{% url 'projects:changeStatus' %}",
+                data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            project_id : el.id,
+                            status :  target.id,
+                            sibling : sibling_id
+
+                        },
+                success: function(data, status){
+                    console.log('Success');
+                    }});
         })
 
     </script>

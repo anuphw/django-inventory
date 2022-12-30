@@ -50,15 +50,21 @@
 
 
 {% block extra_javascript %}
-    <script>
-        function UpdateStatus(url,element){
+
+<script>
+    function UpdateStatus(url,element){
     $.ajax({
             type:"GET",
             url: url,
             success:function(responsedata){
+                if (element.style.background !== "none"){
+                    var unread = parseInt($("#unread_cnt").text());
+                    console.log("unread count: ",unread);
+                    $("#unread_cnt").text(Math.max((unread-1),0));
+                }
                    element.style.background = "none";
             }
          })
-}
-    </script>
+    }
+</script>
 {% endblock %}

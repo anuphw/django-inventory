@@ -430,43 +430,9 @@ class PurchasesListView(ListView):
 
 class PurchaseDetailView(DetailView):
     model = Purchase
-    template_name = '/materials/purchase_detail.html'
+    template_name = 'materials/purchase_detail.html'
     fields = ['date','description','supplier','warehouse','project']
 
-class PurchaseCreateView(CreateView):
-    model = Purchase
-    forms = PurchaseForm
-    template_name = 'materials/purchase_create.html'
-    fields = ['date','description','supplier','warehouse','project']
-
-    def get_success_url(self):
-        return reverse('materials:purchase_detail',kwargs={pk:self.id})
-
-    def get_context_data(self, **kwargs):
-        context = super(PurchaseCreateView, self).get_context_data(**kwargs)
-        formset = MaterialFormSet(queryset=Material.objects.none())
-        context['formset'] = formset
-        context['form_name'] = 'Add Purchase'
-        return context
-    
-    def post(self, request, *args, **kwargs):
-        materials = MaterialFormSet(request.POST)
-        purchase = PurchaseForm(request.POST)
-        if materials.is_valid() and purchase.is_valid():
-            return self.form_valid(materials,purchase)
-    
-    def form_valid(self, materials,purchase):
-        user = self.request.user
-        parent = purchase.save(commit = False)
-        parent.user = user
-        parent.save()
-        for material in materials:
-            child = material.save(commit=False)
-            child.purchase = parent
-            print('*'*20)
-            print(child)
-            child.save()
-        return HttpResponseRedirect(reverse('materials:purchase_list'))
 
 
 class PurchaseSimpleView(View):
@@ -480,7 +446,6 @@ class PurchaseSimpleView(View):
         return render(request,'materials/purchase_create_simple.html',context=context)
     
     def post(self,request):
-        print(request.POST)
         p = request.POST
         user = self.request.user
         dt = p['date']
@@ -492,8 +457,6 @@ class PurchaseSimpleView(View):
             warehouse = Warehouse.objects.filter(pk=p['warehouse']).first()
         elif 'project' in p.keys():
             project = Project.objects.filter(pk=p['project']).first()
-            
-            
         purchase = Purchase(
             date = dt,
             description = desc,
@@ -503,22 +466,75 @@ class PurchaseSimpleView(View):
             user = user
         )   
         purchase.save()
-
+        if project:
+            ProjectTimeline(
+                project = project,
+                status = project.status,
+                type = 'material',
+                user = user,
+                notes = f"Purchased materials for the project <a href='{purchase.get_absolute_url}'>{desc}</a>"
+            ).save()
         for k in p.keys():
             if 'material_' in k:
                 material = Material.objects.filter(pk=p[k]).first()
                 qty = p['quantity_'+k[9:]]
                 price = p['price_'+k[9:]]
-                m = MaterialQty(
+                MaterialQty(
                     material = material,
                     quantity = qty,
                     price = price,
                     purchase = purchase
                 ).save()
-
-
-
         return HttpResponseRedirect(reverse('materials:purchase_list'))
+
+
+
+class InventoryTransferView(View):
+    def get(self,request,pk,message=""):
+        warehouse = Warehouse.objects.get(pk=pk)
+        warehouses = Warehouse.objects.exclude(pk=pk).all()
+        projects =Project.objects.all()
+        context = {
+            'warehouse': warehouse,
+            'warehouses': warehouses,
+            'projects': projects,
+            'message': message,
+        }
+        return render(request,'materials/inventory_transfer_simple.html',context)
+    def post(self,request,pk):
+        source = Warehouse.objects.get(pk=pk)
+        p = request.POST
+        print(p)
+        materialToTransfer=[]
+        for k in p.keys():
+            if 'transfer_' in k:
+                if float(p[k]) > 0:
+                    materialToTransfer.append([k[9:],p[k]])
+        if len(materialToTransfer) == 0:
+            return self.get(request,pk,"Choose at least one material to transfer")
+        dt = p['date']
+        project = destination = None
+        if 'project' in p:
+            project = Project.objects.get(pk=p['project'])
+        if 'destination' in p:
+            destination = Warehouse.objects.get(pk=p['destination'])
+        mt = MaterialTransfer(
+            date = dt,
+            source = source,
+            project = project,
+            destination = destination,
+            user = request.user
+        )
+        mt.save()
+        for id, qty in materialToTransfer:
+            m = Material.objects.get(pk=id)
+            MaterialQtyTransfer(
+                material = m,
+                quantity = qty,
+                transfer = mt,
+            ).save()
+
+        return HttpResponseRedirect(mt.get_list_url)
 
 
 
@@ -551,9 +567,15 @@ class MaterialTransferCreateView(CreateView):
         parent = transfer.save(commit = False)
         parent.user = user
         parent.save()
-        
+        if parent.project:
+            ProjectTimeline(
+                project = parent.project,
+                status = parent.project.status,
+                type = 'material',
+                user = user,
+                notes = f"Material transferred for the project. <a href='{parent.get_absolute_url}'>Transfer Details</a>"
+            ).save()
         for material in materials:
-            
             print('child.name',material.cleaned_data)
             if material.cleaned_data:
                 child = material.save(commit=False)

@@ -1,0 +1,149 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Transfer Material{% endblock %}
+{% block extra_css %}
+    <!-- DataTables -->
+    <link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet" type="text/css" />    
+{% endblock %}
+{% block contents %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Transfer from {{warehouse.name}}</h3>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_date class="form-label">Date</label> 
+                                    <input type="date" name="date" required="" id="id_date" class="form-control" value="{{date_today}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="example-text-input" class="form-label">To Warehouse</label> 
+                                    <select name="destination" id="id_destination" class="form-control">
+                                        <option value="">----------</option>
+                                        {% for destination in warehouses %} 
+                                        <option value="{{destination.id}}">{{destination.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="example-text-input" class="form-label">To Project</label> 
+                                    <select name="project" id="id_project" class="form-control">
+                                        <option value="">----------</option>
+                                        {% for project in projects %} 
+                                        <option value="{{project.id}}">{{project.title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Materials</h5>
+                                        {% if message %} 
+                                        <span style="color:red">{{ message }}</span>
+                                        {% endif %}
+                                        <table id="datatable" class="table table-bordered dt-responsive  nowrap w-100">
+                                            <thead>
+                                                <tr>
+                                                    <th>Material</th>
+                                                    <th>Available</th>
+                                                    <th>Transfer</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for inv in warehouse.inventory_set.all %}
+                                                <tr>
+                                                    <td>{{inv.material.name}}</td>
+                                                    <td>{{inv.quantity}} {{inv.material.unit.name}}</td>
+                                                    <td><input type="number" name="transfer_{{inv.material.id}}" id="transfer_{{inv.material.id}}" min="0" max="{{inv.quantity}}" step="0.01" class="form-control" value="0"></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Transfer</button>
+                                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+{% endblock %}
+
+{% block extra_javascript %}
+    <!-- Required datatable js -->
+    <script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <!-- Buttons examples -->
+    <script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'libs/jszip/dist/jszip.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/pdfmake.min.js' %}"></script>
+    <script src="{% static 'libs/pdfmake/build/vfs_fonts.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+    
+    <!-- Responsive examples -->
+    <script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+    <!-- Datatable init js -->
+    <script src="{% static 'js/pages/datatables.init.js' %}"></script>    
+    <script type="text/javascript">
+        
+        function showAddPopup(triggeringLink) {
+            href = triggeringLink.href;
+            var win = window.open(href, 'Category', 'height=500,width=800,resizable=yes,scrollbars=yes');
+            win.focus();
+            return false;
+        }
+        function closePopup(win, newID, newRepr, id) {
+            $(id).append('<option value=' + newID + ' selected >' + newRepr + '</option>')
+            win.close();
+        }
+        
+        $(function(){
+            $("#id_destination").change(function(){
+                const destination = $(this).val()
+                if (destination.length>0){
+                    $("#id_project option").prop('disabled', true);
+                } else {
+                    $("#id_project option").prop('disabled', false);
+                }
+            });
+            $("#id_project").change(function(){
+                const project = $(this).val()
+                console.log(project);
+                if (project.length>0){
+                    $("#id_destination option").prop('disabled', true);
+                } else {
+                    $("#id_destination option").prop('disabled', false);
+                }
+            });
+        })
+    </script>
+{% endblock %}

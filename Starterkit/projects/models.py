@@ -1,5 +1,6 @@
 from django.db import models
 import os
+from django.db.models import Max
 # Create your models here.
 
 import datetime
@@ -51,6 +52,7 @@ class Project(models.Model):
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING,null=True)
     contact_person = models.ManyToManyField(ClientContact)
     title = models.CharField(max_length=100)
+    status_rank = models.IntegerField(default=0)
     description = models.TextField()
     status = models.ForeignKey(Status,on_delete=models.DO_NOTHING)
     delivery_address = models.CharField(max_length=200,default='')
@@ -58,6 +60,26 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)
     objects = FirstManager() 
+
+
+    def change_status(self,status,user):
+        old_status = self.status
+        self.status = status
+        self.save()
+        
+    def change_status_rank(self,new_rank=None):
+        old_rank = self.status_rank
+        if new_rank is None:
+            new_rank = Project.objects.filter(status=self.status).aggregate(Max('status_rank'))['status_rank__max'] + 1
+            self.status_rank = new_rank
+            self.save()
+        else:
+            for project in Project.objects.filter(status_rank__gte = new_rank).all():
+                if project.id != self.id:
+                    project.status_rank = project.status_rank + 1
+                    project.save()
+            self.status_rank = new_rank
+            self.save()
 
     def delete(self):
         self.deleted_at = timezone.now()
@@ -102,6 +124,41 @@ class Project(models.Model):
     def create_inward_challan_url(self):
         return reverse('projects:inward_material_create',kwargs={'pk':self.pk})
     
+    @property
+    def all_materials(self):
+        materials = {} # material, quantity
+        for purchase in self.purchase_set.all():
+            for m in purchase.materialqty_set.all():
+                materials[m.material.name] = [m,m.quantity]
+        
+        for transfer in self.materialtransfer_set.all():
+            for m in transfer.materialqtytransfer_set.all():
+                if m.material.name not in materials:
+                    materials[m.material.name] = [m.material,0]
+                materials[m.material.name][1] += m.quantity
+        
+        for rt in self.materialreturn_set.all():
+            if rt.inventory.material.name not in materials:
+                materials[rt.inventory.material.name] = [rt.inventory.material,0]
+            materials[rt.inventory.material.name][1] -= rt.quantity
+        return materials
+    
+    @property
+    def all_products(self):
+        products = {} # product, quantity, delivered, returned, remaining 
+        for product in self.product_set.all():
+            products[f'{product.id}'] = [product,product.quantity,0,0,product.quantity] # product, quantity, delivered, returned, remaining 
+        for dc in self.deliverychallan_set.all():
+            for dp in dc.deliveryproduct_set.all():
+                if f'{dp.product.id}' in products.keys():
+                    products[f'{dp.product.id}'][2] += dp.quantity
+                    products[f'{dp.product.id}'][4] -= dp.quantity
+        for ret in self.returns_set.all():
+            for pr in ret.productreturn_set.all():
+                if f'{pr.product.id}' in products.keys():
+                    products[f'{pr.product.id}'][3] += pr.quantity
+                    products[f'{pr.product.id}'][4] += pr.quantity
+        return products
 
 class Product(models.Model):
     name = models.CharField(max_length=30)
@@ -196,6 +253,7 @@ class ProductReturn(models.Model):
     def delete(self):
         self.deleted_at = timezone.now()
         self.save()
+    
 class ProjectFiles(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
     file = models.FileField(upload_to='documents/',validators=[file_size])
