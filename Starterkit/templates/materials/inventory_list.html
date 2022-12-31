@@ -20,7 +20,7 @@
                         <div class="col-sm-4">
                             <div class="search-box me-2 mb-2 d-inline-block">
                                 <div class="position-relative">
-                                    <h2>Inventory</h2>
+                                    <h2>Inventory {{ search }}</h2>
                                 </div>
                             </div>
                         </div>
@@ -95,8 +95,13 @@
     <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
 
     <!-- Datatable init js -->
-    <script src="{% static 'js/pages/datatables.init.js' %}"></script>  
+    <!-- <script src="{% static 'js/pages/datatables.init.js' %}"></script>   -->
     <script type="text/javascript">
+        $(document).ready(function(){$("#datatable").DataTable(),$("#datatable-buttons").DataTable({lengthChange:!1,buttons:["copy","excel","pdf","colvis"]}).buttons().container().appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),$(".dataTables_length select").addClass("form-select form-select-sm")});
+        {% if search %}
+        var table = $("#datatable").DataTable();
+        table.search('{{search}}').draw();
+        {% endif %}
         function showAddPopup(triggeringLink) {
             href = triggeringLink.href;
             var win = window.open(href, 'Category', 'height=500,width=800,resizable=yes,scrollbars=yes');

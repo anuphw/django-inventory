@@ -341,19 +341,19 @@
                                 <!-- item-->
                                 <a class="dropdown-item" href="{% url 'authlockscreen' %}"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Lock Screen</span></a>
                                 {% if user.username == 'admin' %}
-                                <a class="dropdown-item" href="{% url 'settings:settings' %}"><i class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Settings</span></a>
+                                <a class="dropdown-item" href="{% url 'settings:settings' %}"><i class="bx bx-wrench font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Settings</span></a>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>
                                 {% if user.is_authenticated %}
 
-                            {% if user.has_usable_password %}
-                                <a class="dropdown-item" href="{% url 'account_change_password' %}"><i class="bx bx-key font-size-16 align-middle me-1"></i> Change Password</a>
+                                    {% if user.has_usable_password %}
+                                        <a class="dropdown-item" href="{% url 'account_change_password' %}"><i class="bx bx-key font-size-16 align-middle me-1"></i> Change Password</a>
+                                    {% else %}
+                                        <a class="dropdown-item" href="{% url 'account_set_password' %}"><i class="bx bx-key font-size-16 align-middle me-1"></i> Set Password</a>
+                                    {% endif %}
+                                        <a class="dropdown-item text-danger" href="{% url 'account_logout' %}?next={% url 'pages-logout' %}"><i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>Log Out</a>
                                 {% else %}
-                                <a class="dropdown-item" href="{% url 'account_set_password' %}"><i class="bx bx-key font-size-16 align-middle me-1"></i> Set Password</a>
-                                {% endif %}
-                                <a class="dropdown-item text-danger" href="{% url 'account_logout' %}?next={% url 'pages-logout' %}"><i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>Log Out</a>
-                                {% else %}
-                                <a class="dropdown-item" href="{% url 'account_login' %}"><i
+                                    <a class="dropdown-item" href="{% url 'account_login' %}"><i
                                         class="bx bx-log-in font-size-16 align-middle me-1 "></i> Log In</a>
                                 {% endif %}
                             </div>

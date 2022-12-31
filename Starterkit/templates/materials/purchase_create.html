@@ -22,7 +22,7 @@
                                 <div class="mb-3">
                                     <label for="example-text-input" class="form-label">{{ field.label_tag }}</label> 
                                     {% if field.name == 'date' %}
-                                    <input type="date" name="date" required="" id="id_date">
+                                    <input type="date" name="date" required="" id="id_date" value="{{date_today}}">
                                     {% else %} 
                                     {{ field }}
                                     {% endif %}

@@ -1,0 +1,96 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block title %}Settings{% endblock %}
+{% block contents %}
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h4>Add new user</h4>
+            {% if message %} 
+            <p>{{ message }}</p>
+            {% else %} 
+            <form action="" method="post">
+                {% csrf_token %} 
+                {% if errors %} 
+                <ul>
+                    {% for error in errors %} 
+                    <li>
+                        {{error}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username: </label>
+                            <input type="text" name="username" class="form-control" id="username" autocomplete="off" minlength="3" pattern="^[a-zA-Z]+$" required>    
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="firstname" class="form-label">First Name</label>
+                            <input type="text" name="firstname" class="form-control" id="firstname" minlength="3" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" name="lastname" class="form-control" id="lastname" minlength="3" autocomplete="off" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" name="password" class="form-control" id="password" minlength="8" autocomplete="off" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="repassword" class="form-label">Retype Password</label>
+                                    <input type="password" name="repassword" class="form-control" id="repassword" minlength="8" autocomplete="off" oninput="check(this)" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Add</button>
+            </form>
+            {% endif %} 
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_javascript %}
+<script>
+    function check(input) {
+        if (input.value != document.getElementById('password').value) {
+            input.setCustomValidity('Password Must be Matching.');
+        } else {
+            // input is valid -- reset the error message
+            input.setCustomValidity('');
+        }
+    }
+</script>
+
+
+{% endblock %}

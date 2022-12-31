@@ -414,6 +414,13 @@ class InventoryListView(ListView):
     template_name = 'materials/inventory_list.html'
     fields = ['material','warehouse','low_level','quantity']
 
+    def get_context_data(self, **kwargs):
+        context = super(InventoryListView, self).get_context_data(**kwargs)
+        search = self.request.GET.get('search','')
+        if len(search) > 0:
+            context['search'] = search
+        return context
+
 # Inventory Adjustment
 class InventoryAdjListView(ListView):
     model = InventoryAdjustment

@@ -90,6 +90,10 @@ class Material(models.Model):
     def __str__(self):
         return self.name
     
+    @property
+    def get_inventory_url(self):
+        return f"{reverse('materials:inventory_list')}?search={self.name}"
+    
     
     def get_level(self,warehouse_id):
         warehouse = Warehouse.objects.get(pk=warehouse_id)

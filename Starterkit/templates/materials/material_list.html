@@ -49,7 +49,7 @@
                             {% for material in material_list %}
                         <tr>
                             <td>
-                                {{material.name}}
+                                <a href="{{material.get_inventory_url}}">{{material.name}}</a>
                             </td>
                             <td>
                                 {{material.code}}
@@ -61,7 +61,7 @@
                                 {{material.brand}}
                             </td>
                             <td>
-                                {{material.units}}
+                                {{material.unit}}
                             </td>
                             <td>
                                 <img class="rounded avatar-sm" src="{{ material.img }}" alt="Generic placeholder image">
