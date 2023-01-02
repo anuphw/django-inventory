@@ -106,8 +106,14 @@
     <script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
 
     <!-- Datatable init js -->
-    <script src="{% static 'js/pages/datatables.init.js' %}"></script>  
+    <!-- <script src="{% static 'js/pages/datatables.init.js' %}"></script>   -->
+    
     <script type="text/javascript">
+        $(document).ready(function() {
+            $("#datatable").DataTable({
+                "order": []
+            });
+        });
         function showAddPopup(triggeringLink) {
             href = triggeringLink.href;
             var win = window.open(href, 'Category', 'height=500,width=800,resizable=yes,scrollbars=yes');

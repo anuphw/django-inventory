@@ -102,7 +102,7 @@
                                         <p id="p_product_{{ p }}" style="display: none">{{ q.0.description }}</p>
                                     </td>
                                     <td>
-                                        <input type="number" name="      {{ p }}" class="col-xs-2" id="send_quantity_{{ p }}" min="0" max="{{ q.1 }}" step="0.01" value="{{ q.1 }}" class="form-control">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
+                                        <input type="number" name="send_quantity_{{ p }}" class="col-xs-2" id="send_quantity_{{ p }}" min="0" max="{{ q.1 }}" step="0.01" value="{{ q.1 }}" class="form-control">/ <span id="quantity_{{ q.0.id }}">{{ q.1 }}</span> 
                                     </td>
                                 </tr>
                                 {% endfor %} 

@@ -581,7 +581,7 @@ class DeliveryReturnCreateView(View):
                 status = project.status,
                 type = 'product',
                 user = request.user,
-                notes = f"Products returned from <a href='{challan.get_absolute_url}'>challan</a>."
+                notes = f"Products returned from <a href='{challan.get_absolute_url}'>{challan.challanNo}</a>."
             ).save()
         return HttpResponseRedirect(project.get_absolute_url)
 
@@ -629,11 +629,12 @@ class DeliveryChallanCreateView(View):
         return render(request,'projects/delivery_challan_simple.html',context=context)
     def post(self,request,pk):
         p = request.POST
+        print(p)
         project = Project.objects.filter(pk=self.kwargs['pk']).first()
         sending = False
         for k in p.keys():
             if 'send_quantity_' in k:
-                if p[k] > 0:
+                if float(p[k]) > 0:
                     sending = True
         if not sending:
             return self.get(request,pk,'Choose at least one product to send')
@@ -656,7 +657,7 @@ class DeliveryChallanCreateView(View):
             if 'product_' in k:
                 products.append(k[8:])
                 product = Product.objects.filter(pk=k[8:]).first()
-                qty = p['send_quantity_'+k[8:]]
+                qty = float(p['send_quantity_'+k[8:]])
                 DeliveryProduct(
                     deliveryChallan = dc,
                     product = product,

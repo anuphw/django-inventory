@@ -1,10 +1,7 @@
 {% extends 'partials/base.html' %}
 {% load static %}
 {% block title %}{{ project.title|title }}{% endblock title %}
-{% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'libs/toastr/build/toastr.min.css' %}">
-    <link href="{% static 'libs/dropzone/dist/min/dropzone.min.css' %}" rel="stylesheet" type="text/css" />
-{% endblock %}
+
 {% block contents %}
 
 
@@ -268,19 +265,20 @@
             <div class="card-body">
                 <h4>Timeline</h4>
             </div>
+            
             <div class="card-footer bg-transparent border-top border-bottom">
                 <div class="contact-links d-flex font-size-20">
                     <div class="flex-fill">
-                        <a href="javascript: $('.verti-timeline li').show();"><i class="mdi mdi-filter-off"></i>   All</a>
+                        <a class="mylink" href="javascript: $('.verti-timeline li').show();" style="color:#556ee6" ><i class="mdi mdi-filter-off"></i>   All</a>
                     </div>
                     <div class="flex-fill">
-                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._project').hide();"><i class="mdi mdi-file-document-edit"></i>Project</a>
+                        <a class="mylink" href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._project').hide();"  style="color:#556ee6"><i class="mdi mdi-file-document-edit"></i>Project</a>
                     </div>
                     <div class="flex-fill">
-                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._material').hide();"><i class="mdi mdi-truck"></i>Material</a>
+                        <a class="mylink" href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._material').hide();" style="color:#556ee6"><i class="mdi mdi-truck"></i>Material</a>
                     </div>
                     <div class="flex-fill">
-                        <a href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._product').hide();"><i class="mdi mdi-truck-check-outline"></i>Product</a>
+                        <a class="mylink" href="javascript: $('.verti-timeline li').show();$('.verti-timeline li').not('._product').hide();" style="color:#556ee6"><i class="mdi mdi-truck-check-outline"></i>Product</a>
                     </div>
                 </div>
             </div>
@@ -348,5 +346,5 @@
             
         }
     }
-</script>     
+</script>   
 {% endblock %}

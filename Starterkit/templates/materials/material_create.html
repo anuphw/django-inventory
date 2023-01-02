@@ -19,7 +19,7 @@
                             {{ field.errors }}
                             <div class="mb-3 row">
                                 <label for="example-text-input" class="col-md-2 col-form-label">{{ field.label_tag }}</label>
-                                <div class="col-md-10">
+                                <div class="col-md-3">
                                     {{ field }}
                                     {% if field.name == 'category' %}
                                     <a href="{% url 'materials:category_pop' %}" id="add_category" onclick="return showAddPopup(this);">
@@ -59,8 +59,13 @@
 {% endblock %}
 
 {% block extra_javascript %}
-
     <script type="text/javascript">
+    $(document).ready(function(){
+        $("#id_category").addClass('form-control');
+        $("#id_brand").addClass('form-control');
+        $("#id_unit").addClass('form-control');
+        $("#id_image").addClass('form-control');
+    });
         function showAddPopup(triggeringLink) {
             href = triggeringLink.href;
             var win = window.open(href, 'Category', 'height=500,width=800,resizable=yes,scrollbars=yes');

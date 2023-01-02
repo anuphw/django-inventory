@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 from django.contrib.messages import constants as messages
+import requests
 
 
 MESSAGE_TAGS = {
@@ -36,7 +37,7 @@ SECRET_KEY = 'd!m50t)w$$&ff(*pn7%oqw-1yxo+eub*xcxd^8pzo=*2)ynq=w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','2da188c804ec.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1','localhost',requests.get('https://api.ipify.org/').text]
 
 
 # Application definition

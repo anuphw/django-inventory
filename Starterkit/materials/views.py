@@ -434,6 +434,12 @@ class PurchasesListView(ListView):
     template_name = '/materials/purchase_list.html'
     fields = '__all__'
 
+    def get_context_data(self, **kwargs):
+        context = super(PurchasesListView,self).get_context_data(**kwargs)
+        context['purchase_list'] = Purchase.objects.order_by('-id').all()
+        return context
+    
+
 
 class PurchaseDetailView(DetailView):
     model = Purchase
