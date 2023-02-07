@@ -33,7 +33,7 @@ urlpatterns = [
     path('layout/',include('layout.urls')),
 
     # Inventory
-    path('inventory/',include('inventory.urls')),
+    # path('inventory/',include('inventory.urls')),
     path('clients/',include('clients.urls', namespace='clients')),
     path('expenses/',include('expenses.urls', namespace='expenses')),
     path('projects/',include('projects.urls', namespace='projects')),

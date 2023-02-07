@@ -6,6 +6,7 @@ from django.urls import reverse
 # Create your views here.
 
 
+
 class ClientListView(ListView):
     model = Client
     template_name = 'clients/clients_list.html'
@@ -19,13 +20,16 @@ class ClientDetailView(DetailView):
 class ClientCreateView(CreateView):
     model = Client
     template_name = 'clients/client_create.html'
-    fields = ['name','address','contact_number']
+    fields = ['name','address','contact_number','is_supplier','is_customer']
+
+    def get_success_url(self):
+        return self.get_object().get_absolute_url
 
 
 class ClientAddPopup(CreateView):
     model = Client
     template_name = 'clients/client_create.html'
-    fields = ['name','address','contact_number']
+    fields = ['name','address','contact_number','is_supplier','is_customer']
 
     def form_valid(self, form):
         instance = form.save()
@@ -38,15 +42,16 @@ class ClientAddPopup(CreateView):
 
 class ClientUpdateView(UpdateView):
     model = Client
-    fields = ['name','address','contact_number']
+    fields = ['name','address','contact_number','is_supplier','is_customer']
     template_name = 'clients/client_create.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['update']= True
         return context
     
-
+    def get_success_url(self):
+        return self.get_object().get_absolute_url # reverse('clients:clientsList')
 
 class ClientContactAddView(CreateView):
     model = ClientContact

@@ -49,11 +49,23 @@
                             <td><a href="{{ transfer.get_absolute_url }}">
                                 {{ transfer.date }}</a>
                             </td>
-                            <td>{{ transfer.source}}</td>
-                            <td>{{ transfer.destination }}</td>
-                            <td>{{transfer.project}}</td>
+                            <td><a href="{{ transfer.source.get_absolute_url}}">{{ transfer.source}}</a></td>
+                            <td>
+                                {% if transfer.destination %} 
+                                <a href="{{ transfer.destination.get_absolute_url}}">{{ transfer.destination }}</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transfer.project %} 
+                                <a href="{{ transfer.project.get_absolute_url}}">{{transfer.project}}</a>
+                                {% endif %}
+                            </td>
                             <td>{{transfer.user}}</td>
-                            <td><a href="{{ transfer.delete_url }}">delete</a></td>
+                            <td>
+                                <a href="{{ transfer.delete_url }}" role="button" class="btn btn-outline-danger waves-effect waves-light">
+                                    <i class="mdi mdi-delete"></i>
+                                </a>
+                            </td>
                         </tr>
                             {% endfor %}
                         </tbody>

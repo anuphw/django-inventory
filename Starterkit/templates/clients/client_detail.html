@@ -29,6 +29,22 @@
                             <td>{{ client.contact_number }}</td>
                         </tr>
                         <tr>
+                            <td><b>Supplier</b></td>
+                            {% if client.is_supplier %}
+                            <td>Yes</td>
+                            {% else %}
+                            <td>No</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td><b>Customer</b></td>
+                            {% if client.is_customer %}
+                            <td>Yes</td>
+                            {% else %}
+                            <td>No</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
                             <td><b>Status</b></td>
                             {% if client.is_active %}
                             <td>Active</td>

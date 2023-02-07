@@ -17,13 +17,16 @@ class FirstManager(models.Manager):
         except:
             return None
 
-    
+
+
 
 class Client(models.Model):
     name = models.CharField(null=False, max_length=50, unique=True)
     address = models.CharField(null=False, max_length=200)
     contact_number = models.CharField(null=False, max_length=15)
     is_active = models.BooleanField(default=True)
+    is_supplier = models.BooleanField(default=False)
+    is_customer = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)

@@ -38,6 +38,8 @@
                             <th>Name</th>
                             <th>Address</th>
                             <th>Contact Number</th>
+                            <th>Supplier</th>
+                            <th>Customer</th>
                             <th>Active</th>
                         </tr>
                         </thead>
@@ -47,10 +49,20 @@
                             <td><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></td>
                             <td>{{ client.address}}</td>
                             <td>{{ client.contact_number }}</td>
-                            {% if client.is_active %}
-                            <td>Active</td>
+                            {% if client.is_supplier %}
+                            <td>Yes</td>
                             {% else %}
-                            <td>Inactive</td>
+                            <td>No</td>
+                            {% endif %}
+                            {% if client.is_customer %}
+                            <td>Yes</td>
+                            {% else %}
+                            <td>No</td>
+                            {% endif %}
+                            {% if client.is_active %}
+                            <td>Yes</td>
+                            {% else %}
+                            <td>No</td>
                             {% endif %}
                         </tr>
                             {% endfor %}

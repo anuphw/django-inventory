@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'clients',
     'projects',
     'materials',
+    'inventory',
     'expenses',
     'settings',
     'notifications',

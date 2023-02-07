@@ -37,7 +37,8 @@
                     <table id="datatable" class="table table-bordered dt-responsive  wrap w-90">
                         <thead>
                         <tr>
-                            <th>Date</th>
+                            <th>Updated Date</th>
+                            <th>Purchase Date</th>
                             <th>Description</th>
                             <th>Supplier</th>
                             <th>Warehouse</th>
@@ -48,6 +49,9 @@
                         <tbody>
                             {% for purchase in purchase_list %}
                         <tr>
+                            <td>
+                                {{purchase.updated_at}}
+                            </td>
                             <td>
                                 {{purchase.date}}
                             </td>

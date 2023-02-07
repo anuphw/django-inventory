@@ -60,7 +60,7 @@ class StatusCreateView(View):
 class ProjectSimpleCreateView(View):
     def get(self,request):
         context = {
-            'clients': Client.objects.filter(is_active=True).all(),
+            'clients': Client.objects.filter(is_active=True).filter(is_customer=True).all(),
             'statuses': Status.objects.order_by('order').all(),
         }
         return render(request,'projects/project_create_simple.html',context=context)
@@ -292,37 +292,37 @@ class ProjectPopView(CreateView):
     fields = ['title','description','status','delivary_address']
 
 
-class ProjectCreateView(CreateView):
-    model = Project
-    # form_class = ProjectForm
-    template_name = 'projects/project_create.html'
-    fields = ['client','contact_person','title','description','status','delivary_address']
+# class ProjectCreateView(CreateView):
+#     model = Project
+#     # form_class = ProjectForm
+#     template_name = 'projects/project_create.html'
+#     fields = ['client','contact_person','title','description','status','delivary_address']
 
-    def get_success_url(self):
-        return self.object.get_absolute_url
+#     def get_success_url(self):
+#         return self.object.get_absolute_url
 
-    def form_valid(self, form):
-        user = self.request.user
-        for f in form:
-            print(f.name,f.data)
-        self.object = form.save()
-        status = ""
-        notes = "Initiated project with: "
-        # Create notes based on what is changed
-        for f in form:
-            if f.name == 'contact_person':
-                for c in set(f.data):
-                    new_contact = ClientContact.objects.get_first(c)
-                    notes += f" {f.name} =  {new_contact.name}."
-            elif f.name == 'status':
-                new_status = Status.objects.get_first(f.data)
-                notes += f" {f.name} = {new_status.status}."
-                status = new_status
-            else:
-                notes += f" {f.name} = {f.data}."
-        print(notes)
-        self.update = ProjectTimeline(project=self.object,status=status,type='project',notes = notes,user = user).save()
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         user = self.request.user
+#         for f in form:
+#             print(f.name,f.data)
+#         self.object = form.save()
+#         status = ""
+#         notes = "Initiated project with: "
+#         # Create notes based on what is changed
+#         for f in form:
+#             if f.name == 'contact_person':
+#                 for c in set(f.data):
+#                     new_contact = ClientContact.objects.get_first(c)
+#                     notes += f" {f.name} =  {new_contact.name}."
+#             elif f.name == 'status':
+#                 new_status = Status.objects.get_first(f.data)
+#                 notes += f" {f.name} = {new_status.status}."
+#                 status = new_status
+#             else:
+#                 notes += f" {f.name} = {f.data}."
+#         print(notes)
+#         self.update = ProjectTimeline(project=self.object,status=status,type='project',notes = notes,user = user).save()
+#         return super().form_valid(form)
 
 
 
@@ -612,10 +612,13 @@ class DeliveryChallanCreateView(View):
         
         for dc in project.deliverychallan_set.all():
             for dp in dc.deliveryproduct_set.all():
-                print(dp.product.id)
                 if f'{dp.product.id}' in products:
                     products[f'{dp.product.id}'][1] -= dp.quantity
-        
+        for ret in project.returns_set.all():
+            for pr in ret.productreturn_set.all():
+                if f'{pr.product.id}' in products:
+                    products[f'{pr.product.id}'][1] += pr.quantity
+                    
         for p in products.keys():
             if products[p][1] == 0:
                 products.pop(p)

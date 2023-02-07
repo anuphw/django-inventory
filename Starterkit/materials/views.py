@@ -451,7 +451,7 @@ class PurchaseDetailView(DetailView):
 class PurchaseSimpleView(View):
     def get(self,request):
         context = {
-            'suppliers': Client.objects.order_by('name').all(),
+            'suppliers': Client.objects.filter(is_supplier=True).order_by('name').all(),
             'warehouses': Warehouse.objects.order_by('name').all(),
             'projects': Project.objects.order_by('title').all(),
             'materials': Material.objects.order_by('name').all()

@@ -142,8 +142,8 @@ class City(models.Model):
 
 
 class Warehouse(models.Model):
-    name = models.CharField(max_length=20)
-    address = models.CharField(max_length=50)
+    name = models.CharField(max_length=200)
+    address = models.CharField(max_length=500)
     contact = models.CharField(max_length=15)
     city = models.ForeignKey(City,on_delete=models.CASCADE)
     deleted_at = models.DateTimeField(null=True, default=None)
@@ -157,17 +157,22 @@ class Warehouse(models.Model):
         return self.name
 
     @property
+    def get_absolute_url(self):
+        return reverse('materials:warehouse_update', kwargs={'pk': self.id})
+
+    @property
     def update_url(self):
-        return reverse('materials:city_update', kwargs={'pk': self.id})
+        return reverse('materials:warehouse_update', kwargs={'pk': self.id})
 
     @property
     def delete_url(self):
-        return reverse('materials:city_delete', kwargs={'pk': self.id})
+        return reverse('materials:warehouse_delete', kwargs={'pk': self.id})
 
 
 class Inventory(models.Model):
     material = models.ForeignKey(Material,on_delete=models.CASCADE)
     warehouse = models.ForeignKey(Warehouse,on_delete=models.CASCADE)
+    owner = models.ForeignKey(Client,on_delete=models.DO_NOTHING, default=None)
     low_level = models.IntegerField(default=10)
     quantity = models.IntegerField(default=0)
     deleted_at = models.DateTimeField(null=True, default=None)
@@ -181,6 +186,7 @@ class Inventory(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['material_id','warehouse_id'],name = 'uniq_inventory'),
+            models.UniqueConstraint(fields=['material_id','warehouse_id','owner_id'],name = 'uniq_owner_inventory'),
         ]
 
     def __str__(self):
@@ -245,6 +251,7 @@ class InventoryAdjustment(models.Model):
 
 
 
+
 class Purchase(models.Model):
     date = models.DateField()
     description = models.CharField(max_length=50)
@@ -252,6 +259,8 @@ class Purchase(models.Model):
     warehouse = models.ForeignKey(Warehouse,on_delete=models.DO_NOTHING,null=True, blank=True)
     project = models.ForeignKey(Project,on_delete=models.DO_NOTHING,null=True, blank=True)
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, default=None)
     objects = FirstManager()  
 
